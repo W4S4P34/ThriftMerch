@@ -28,3 +28,8 @@ hs_err_pid*
 .settings/
 .bin/
 /bin/
+
+# IntelliJ
+out/
+.idea/
+Java.iml
