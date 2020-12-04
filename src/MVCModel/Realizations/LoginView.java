@@ -1,7 +1,7 @@
-package MVCModels.Realizations;
+package MVCModel.Realizations;
 
-import MVCModels.Controllers.ILoginViewController;
-import MVCModels.Views.ILoginView;
+import MVCModel.Controllers.ILoginViewController;
+import MVCModel.Views.ILoginView;
 
 public class LoginView extends AbstractView<ILoginViewController> implements ILoginView {
 

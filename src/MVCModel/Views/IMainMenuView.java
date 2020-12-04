@@ -1,6 +1,6 @@
-package MVCModels.Views;
+package MVCModel.Views;
 
-import MVCModels.Controllers.IMainMenuViewController;
+import MVCModel.Controllers.IMainMenuViewController;
 
 public interface IMainMenuView extends IView<IMainMenuViewController> {
 

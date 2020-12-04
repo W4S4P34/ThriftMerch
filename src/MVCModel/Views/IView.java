@@ -1,8 +1,8 @@
-package MVCModels.Views;
+package MVCModel.Views;
 
 import javax.swing.JComponent;
 
-import MVCModels.Controllers.IViewController;
+import MVCModel.Controllers.IViewController;
 
 public interface IView<C extends IViewController> {
 	public JComponent getView();

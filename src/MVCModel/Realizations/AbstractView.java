@@ -1,10 +1,10 @@
-package MVCModels.Realizations;
+package MVCModel.Realizations;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import MVCModels.Controllers.IViewController;
-import MVCModels.Views.IView;
+import MVCModel.Controllers.IViewController;
+import MVCModel.Views.IView;
 
 public abstract class AbstractView<C extends IViewController> extends JPanel implements IView<C> {
 

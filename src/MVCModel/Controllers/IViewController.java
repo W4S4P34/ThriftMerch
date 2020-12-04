@@ -1,4 +1,4 @@
-package MVCModels.Controllers;
+package MVCModel.Controllers;
 
 public interface IViewController {
 

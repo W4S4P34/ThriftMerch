@@ -1,7 +1,7 @@
-package MVCModels.Realizations;
+package MVCModel.Realizations;
 
-import MVCModels.Controllers.ISignUpViewController;
-import MVCModels.Views.ISignUpView;
+import MVCModel.Controllers.ISignUpViewController;
+import MVCModel.Views.ISignUpView;
 
 public class SignUpView extends AbstractView<ISignUpViewController> implements ISignUpView{
 	

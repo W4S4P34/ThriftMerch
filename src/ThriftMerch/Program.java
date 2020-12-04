@@ -2,15 +2,15 @@ package ThriftMerch;
 
 import Actor.Actor;
 import DataController.DataHandler;
-import MVCModels.Controllers.ILoginViewController;
-import MVCModels.Controllers.IMainMenuViewController;
-import MVCModels.Controllers.ISignUpViewController;
-import MVCModels.Realizations.LoginView;
-import MVCModels.Realizations.MainMenuView;
-import MVCModels.Realizations.SignUpView;
-import MVCModels.Views.ILoginView;
-import MVCModels.Views.IMainMenuView;
-import MVCModels.Views.ISignUpView;
+import MVCModel.Controllers.ILoginViewController;
+import MVCModel.Controllers.IMainMenuViewController;
+import MVCModel.Controllers.ISignUpViewController;
+import MVCModel.Realizations.LoginView;
+import MVCModel.Realizations.MainMenuView;
+import MVCModel.Realizations.SignUpView;
+import MVCModel.Views.ILoginView;
+import MVCModel.Views.IMainMenuView;
+import MVCModel.Views.ISignUpView;
 
 import java.awt.CardLayout;
 import java.io.IOException;

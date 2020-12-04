@@ -1,4 +1,4 @@
-package MVCModels.Realizations;
+package MVCModel.Realizations;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -8,8 +8,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import MVCModels.Controllers.IMainMenuViewController;
-import MVCModels.Views.IMainMenuView;
+import MVCModel.Controllers.IMainMenuViewController;
+import MVCModel.Views.IMainMenuView;
 import Misc.BackgroundPanel;
 
 public class MainMenuView extends AbstractView<IMainMenuViewController> implements IMainMenuView {

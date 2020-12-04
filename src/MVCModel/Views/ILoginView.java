@@ -1,6 +1,6 @@
-package MVCModels.Views;
+package MVCModel.Views;
 
-import MVCModels.Controllers.ILoginViewController;
+import MVCModel.Controllers.ILoginViewController;
 
 public interface ILoginView extends IView<ILoginViewController> {
 

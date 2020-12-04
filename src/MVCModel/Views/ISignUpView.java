@@ -1,6 +1,6 @@
-package MVCModels.Views;
+package MVCModel.Views;
 
-import MVCModels.Controllers.ISignUpViewController;
+import MVCModel.Controllers.ISignUpViewController;
 
 public interface ISignUpView extends IView<ISignUpViewController> {
 
