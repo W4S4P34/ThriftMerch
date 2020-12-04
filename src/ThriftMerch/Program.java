@@ -1,28 +1,143 @@
 package ThriftMerch;
+
 import Actor.Actor;
 import DataController.DataHandler;
+import MVCModels.Controllers.ILoginViewController;
+import MVCModels.Controllers.IMainMenuViewController;
+import MVCModels.Controllers.ISignUpViewController;
+import MVCModels.Realizations.LoginView;
+import MVCModels.Realizations.MainMenuView;
+import MVCModels.Realizations.SignUpView;
+import MVCModels.Views.ILoginView;
+import MVCModels.Views.IMainMenuView;
+import MVCModels.Views.ISignUpView;
 
-
+import java.awt.CardLayout;
+import java.io.IOException;
 import java.util.Scanner;
 
-public class Program {
-    //#region Private Fields
-    private static Actor user = null;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 
-    //#endregion
+import java.lang.ClassNotFoundException;
+import java.lang.InstantiationException;
+import java.lang.IllegalAccessException;
+import javax.swing.UnsupportedLookAndFeelException;
 
-    //#region Public Methods
-    public static void StartProgram() {
-        LoadAllData();
-        LoadMenuLoginGUI();
+public class Program extends JPanel {
+
+	private static final long serialVersionUID = 1L;
+
+	/* **************************************** */
+    // #region Private Fields
+    private Actor user = null;
+
+    // #endregion
+    
+    /* **************************************** */
+    // #region Main Panel
+    public class MainPanel extends JPanel {
+
+		private static final long serialVersionUID = 1L;
+
+		/* **************************************** */
+        // #region Private Fields
+	    	// #region Scene Definition
+	    	protected static final String MAINMENU_VIEW = "View.mainmenu";
+		    protected static final String LOGIN_VIEW = "View.login";
+		    protected static final String SIGNUP_VIEW = "View.signup";
+		    
+		    // #endregion
+	    private CardLayout cardLayout;
+
+	    private IMainMenuView mainMenuView;
+	    private ILoginView loginView;
+	    private ISignUpView signUpView;
+		    
+		// #endregion
+	    
+	    /* **************************************** */
+	    // #region Constructors
+	    public MainPanel() throws IOException {
+	    	cardLayout = new CardLayout();
+	        setLayout(cardLayout);
+	        
+	        mainMenuView = new MainMenuView(new MainMenuViewController());
+	        loginView = new LoginView(new LoginViewController());
+	        signUpView = new SignUpView(new SignUpViewController());
+	        
+	        add(mainMenuView.getView(), MAINMENU_VIEW);
+	        add(loginView.getView(), LOGIN_VIEW);
+	        add(signUpView.getView(), SIGNUP_VIEW);
+	        
+	        cardLayout.show(this, MAINMENU_VIEW);
+	    }
+	    
+	    // #endregion
+	    
+	    /* **************************************** */
+	    // #region Controllers Implementation
+	    protected class MainMenuViewController implements IMainMenuViewController {
+
+	    }
+	    
+	    protected class LoginViewController implements ILoginViewController {
+
+	    }
+	    
+	    protected class SignUpViewController implements ISignUpViewController {
+	    	
+	    }
+	    
+	    // #endregion
+
     }
-    public static void EndProgram() {
+    
+    // #endregion
+
+    /* **************************************** */
+    // #region Public Methods
+    public void StartProgram() {
+        LoadAllData();
+        
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+          
+	                JFrame mainFrame = new JFrame("ThriftMerch");
+	                mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+					mainFrame.add(new MainPanel());
+				
+	                mainFrame.pack();
+	                
+	                mainFrame.setLocationRelativeTo(null);
+	                mainFrame.setResizable(false);
+	 
+	                mainFrame.setVisible(true);
+	                
+                } catch (IOException exception) {
+				  	System.out.println("Error: " + exception.getMessage());
+				} catch (ClassNotFoundException 
+                		| InstantiationException 
+                		| IllegalAccessException 
+                		| UnsupportedLookAndFeelException exception) {
+                	System.out.println("Error: " + exception.getMessage());
+                }
+            }
+        });
+    }
+
+    public void EndProgram() {
         SaveAllData();
     }
-    //#endregion
+    // #endregion
 
-    //#region Private Methods
-    private static Actor SignIn() {
+    /* **************************************** */
+    // #region Private Methods
+    private Actor SignIn() {
         Scanner scanner = new Scanner(System.in).useDelimiter("\n");
         System.out.print("ID: ");
         String ID = scanner.nextLine();
@@ -36,12 +151,13 @@ public class Program {
         }
         return null;
     }
-    private static Actor SignUp() {
+
+    private Actor SignUp() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("1. Customer");
         System.out.println("2. Shipper");
         System.out.print("Choice: ");
-        try{
+        try {
             byte choice = scanner.nextByte();
             return DataHandler.GetInstance().SignUp(choice);
         }
@@ -51,49 +167,15 @@ public class Program {
         }
         return null;
     }
-    private static void LoadAllData() {
+    
+    private void LoadAllData() {
         // Load all data from file
     }
-    private static void SaveAllData(){
+
+    private void SaveAllData(){
         // Save all data to file
     }
-    private static void LoadMenuLoginGUI() {
-        System.out.println("1. Sign In");
-        System.out.println("2. Sign Up");
-        System.out.println("3. Exit");
-        int choice = MenuChoice(1,3);
-        switch (choice)
-        {
-            case 1:
-            {
-                user = SignIn();
-                break;
-            }
-            case 2:
-            {
-                user = SignUp();
-                break;
-            }
-            case 3:
-            {
-                return;
-            }
-        }
-        if(user != null)
-            LoadMenuGUI();
-        else
-            LoadMenuLoginGUI();
-    }
-    private static void LoadMenuGUI(){
-        user.LoadMenuGUI();
-    }
-    private static int MenuChoice(int minBound,int maxBound) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Choice: ");
-        int tmp = scanner.nextInt();
-        if(tmp < minBound || tmp > maxBound)
-            return MenuChoice(minBound,maxBound);
-        return tmp;
-    }
-    //#endregion
+
+    // #endregion
+    
 }
