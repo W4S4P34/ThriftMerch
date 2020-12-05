@@ -2,27 +2,37 @@ package Actor;
 
 
 import DataController.DataHandler;
+import Misc.ActorType;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Shop extends Actor {
 
     String license = "";
 
+
+    @Override
+    public ActorType GetActorType()
+    {
+        return ActorType.SHOP;
+    }
     //#region Core Methods
     @Override
     public Actor SignIn(String id, String password) {
-        DataHandler.GetInstance().SignIn((conn)->{
+        return DataHandler.GetInstance().SignIn((conn)->{
+            System.out.println("Shop query");
             String sql = "select * from shop where id = ? and password = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
                 stmt.setString(2,password);
-                var resultSet = stmt.executeQuery();
+                ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
                 {
+                    System.out.println("Not null");
                     this.account.ID = resultSet.getString("id");
                     this.account.password = resultSet.getString("password");
                     this.name = resultSet.getString("name");
@@ -34,12 +44,12 @@ public class Shop extends Actor {
                 // Close resource
                 stmt.close();
                 conn.close();
+                System.out.println(actor);
                 return actor;
             } catch (SQLException exc) { }
 
             return null;
         });
-        return null;
     }
     @Override
     public Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender){

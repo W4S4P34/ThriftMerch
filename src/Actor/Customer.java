@@ -2,13 +2,19 @@ package Actor;
 
 
 import DataController.DataHandler;
+import Misc.ActorType;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Customer extends Actor {
-
+    @Override
+    public ActorType GetActorType()
+    {
+        return ActorType.CUSTOMER;
+    }
     //#region Core Methods
     @Override
     public Actor SignIn(String id, String password) {
@@ -18,7 +24,7 @@ public class Customer extends Actor {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
                 stmt.setString(2,password);
-                var resultSet = stmt.executeQuery();
+                ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
                 {
@@ -41,16 +47,14 @@ public class Customer extends Actor {
     }
     @Override
     public Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender){
-        return DataHandler.GetInstance().SignIn((conn)->{
+        return DataHandler.GetInstance().SignUp((conn)->{
             String sql = "select id from customer where id = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
                 var resultSet = stmt.executeQuery();
                 if(resultSet.next())
-                {
                     return null;
-                }
                 sql = "insert into customer values(?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
                 InitData(id, password, name, phoneNumber, address, age, gender);
@@ -66,6 +70,7 @@ public class Customer extends Actor {
                 conn.commit();
                 stmt.close();
                 conn.close();
+                return this;
             } catch (SQLException exc) {
                 try {
                     conn.rollback();

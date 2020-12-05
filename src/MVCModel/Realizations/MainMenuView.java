@@ -38,7 +38,7 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 	public MainMenuView(IMainMenuViewController viewController) throws IOException {
 		super(viewController);
 		setLayout(new BorderLayout());
-
+		System.out.println(System.getProperty("user.dir"));
 		// Get background image
 		this.backgroundPanel = 
 				new BackgroundPanel(
@@ -47,7 +47,7 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 
 		this.backgroundPanel.setLayout(new GridLayout(0, 3));
 		this.backgroundPanel.setTransparentAdd(false);
-		
+
 		// Seperated panels
 		region_1 = new JPanel();
 		

@@ -1,5 +1,7 @@
 package Actor;
 
+import Misc.ActorType;
+
 import java.util.Scanner;
 
 public abstract class Actor {
@@ -94,7 +96,7 @@ public abstract class Actor {
     public Actor() {
         account = new Account("", "");
     }
-
+    public abstract ActorType GetActorType();
     public abstract Actor SignIn(String id,String password);
     public abstract Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender);
     public abstract void Display();

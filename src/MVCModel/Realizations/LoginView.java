@@ -17,6 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+import Actor.*;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Views.ILoginView;
 import Misc.ActorType;
@@ -191,27 +192,24 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		// Events
 		signinButton.addActionListener((ActionEvent event) -> {
 			// Pass to another controller to handle -> Receive the result from it
-			// Actor actor;
+			Actor actor = null;
 			String username = this.username.getText(), 
 				   password = new String(this.password.getPassword());
 			
 			if (shopRadioButton.isSelected()) {
-				// actor = new Shop().SignIn(username, password);
+				actor = new Shop().SignIn(username, password);
 			}
 			else if (customerRadioButton.isSelected()) {
-				// actor = new Customer().SignIn(username, password);
+				actor = new Customer().SignIn(username, password);
 			}
 			else if (shipperRadioButton.isSelected()) {
-				// actor = new Shipper().SignIn(username, password);
-			}			
-			
-			System.out.println(username + " " + password);
-			
-			boolean isValid = false;
-			
+				actor = new Shipper().SignIn(username, password);
+			}
 			// TODO
-			if (isValid) {
+			if (actor != null) {
+				System.out.println(actor.GetActorType());
 				getViewController().signinSuccessful();
+				actor.Display();
 			}
 			else {
 				getViewController().signinFailed();

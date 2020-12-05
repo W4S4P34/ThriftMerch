@@ -1,12 +1,18 @@
 package Actor;
 
 import DataController.DataHandler;
+import Misc.ActorType;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class Shipper extends Actor{
-
+    @Override
+    public ActorType GetActorType()
+    {
+        return ActorType.SHIPPER;
+    }
     //#region Core Methods
     @Override
     public Actor SignIn(String id, String password) {
@@ -16,7 +22,7 @@ public class Shipper extends Actor{
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
                 stmt.setString(2,password);
-                var resultSet = stmt.executeQuery();
+                ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
                 {
@@ -39,15 +45,16 @@ public class Shipper extends Actor{
     }
     @Override
     public Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender){
-        return DataHandler.GetInstance().SignIn((conn)->{
-            String sql = "select id from customer where id = ?";
+        return DataHandler.GetInstance().SignUp((conn)->{
+            String sql = "select id from shipper where id = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
                 var resultSet = stmt.executeQuery();
                 if(resultSet.next())
                     return null;
-                sql = "insert into customer values(?,?,?,?,?,?,?)";
+                sql = "insert into shipper values(?,?,?,?,?,?,?)";
+                stmt = conn.prepareStatement(sql);
                 InitData(id, password, name, phoneNumber, address, age, gender);
                 stmt.setString(1,id);
                 stmt.setString(2,password);
@@ -56,6 +63,12 @@ public class Shipper extends Actor{
                 stmt.setString(5,address);
                 stmt.setInt(6,age);
                 stmt.setString(7,gender);
+                stmt.executeUpdate();
+                // Close resource
+                conn.commit();
+                stmt.close();
+                conn.close();
+                return this;
             } catch (SQLException exc) { }
             return null;
         });
