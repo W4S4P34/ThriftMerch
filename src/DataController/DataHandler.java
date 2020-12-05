@@ -1,12 +1,8 @@
 package DataController;
 
-import Actor.Actor;
-
-import java.awt.event.ActionListener;
+import Actor.*;
 import java.sql.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /*
     DataHandler controls all data of this program
@@ -44,20 +40,36 @@ public class DataHandler {
     // #region Public Methods
     public Actor SignIn(Function<Connection,Actor> function)
     {
-        Statement stmt = null;
         Connection conn = null;
         try{
             conn = DriverManager.getConnection(DB_URL,
                     USER, PASS);
             if(conn == null)
                 return null;
-            stmt = conn.prepareStatement("");
+            return function.apply(conn);
         }
         catch (SQLException exc)
         {
             System.out.println("Error: " + exc.getMessage());
         }
-        return function.apply(conn);
+        return null;
+    }
+    public Actor SignUp(Function<Connection,Actor> function)
+    {
+        Connection conn = null;
+        try{
+            conn = DriverManager.getConnection(DB_URL,
+                    USER, PASS);
+            if(conn == null)
+                return null;
+            conn.setAutoCommit(false);
+            return function.apply(conn);
+        }
+        catch (SQLException exc)
+        {
+            System.out.println("Error: " + exc.getMessage());
+        }
+        return null;
     }
     // #endregion
 
@@ -66,11 +78,10 @@ public class DataHandler {
     private DataHandler()
     {
         try{
-            myDriver = new com.mysql.jdbc.Driver();
+            myDriver = new com.mysql.cj.jdbc.Driver();
             DriverManager.registerDriver(myDriver);
-
         }
-        catch (SQLException exc) {
+        catch (Exception exc) {
             System.out.println("Error: " + exc.getMessage());
         }
     }

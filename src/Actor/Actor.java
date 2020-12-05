@@ -30,6 +30,7 @@ public abstract class Actor {
     // #region Protected Fields
     protected Account account;
     protected String name;
+    protected String address;
     protected byte age;
     protected String phoneNumber;
     protected String gender;
@@ -93,10 +94,10 @@ public abstract class Actor {
     public Actor() {
         account = new Account("", "");
     }
-    public Actor SignIn(String id,String password){
-        return null;
-    }
 
+    public abstract Actor SignIn(String id,String password);
+    public abstract Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender);
+    public abstract void Display();
 
 
     // #endregion
