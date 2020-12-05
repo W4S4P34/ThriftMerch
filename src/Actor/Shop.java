@@ -1,18 +1,16 @@
 package Actor;
 
-import DataController.Post;
-
 import java.util.Scanner;
 
-public class Customer extends Actor {
-
+public class Shop extends Actor {
 
 
 
     //#region Core Methods
 
-
     //#endregion
 
+    //#region GUI Methods
 
+    //#endregion
 }

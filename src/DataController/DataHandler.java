@@ -1,11 +1,12 @@
 package DataController;
 
-import Actor.*;
-import javax.security.auth.login.LoginException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import Actor.Actor;
 
+import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /*
     DataHandler controls all data of this program
@@ -15,15 +16,13 @@ public class DataHandler {
     /* **************************************** */
 	// #region Private Fields
     private static DataHandler instance = null;
-    
-    private HashMap<String,Actor> actorList = null;
-    
-    private HashMap<String,ArrayList<Post>> postList = null;
-    private ArrayList<Post> reportList = null;
-    
-    private HashMap<String,ArrayList<Order>> customerOrderList = null;
-    private HashMap<String,ArrayList<Order>> shipperOrderList = null;
+    private Driver myDriver;
+    private final String DB_URL = "jdbc:mysql://localhost/qlch";
+    private final String USER = "root";
+    private final String PASS = "";
     // #endregion
+
+
 
     /* **************************************** */
     // #region Public Fields
@@ -43,39 +42,37 @@ public class DataHandler {
 
     /* **************************************** */
     // #region Public Methods
-    public Actor SignIn(String ID,String password) throws LoginException {
-        Actor user = actorList.get(ID);
-        if(user == null || user.GetPassword().compareTo(password) != 0)
-            throw new LoginException("Your username or password may be incorrect");
-        return user;
-    }
-
-    public Actor SignUp(byte actorID) throws LoginException {
-        Actor user;
-        if(actorID == 1)
+    public Actor SignIn(Function<Connection,Actor> function)
+    {
+        Statement stmt = null;
+        Connection conn = null;
+        try{
+            conn = DriverManager.getConnection(DB_URL,
+                    USER, PASS);
+            if(conn == null)
+                return null;
+            stmt = conn.prepareStatement("");
+        }
+        catch (SQLException exc)
         {
-            user = new Customer();
+            System.out.println("Error: " + exc.getMessage());
         }
-        else
-        {
-            user = new Shipper();
-        }
-        user.CreateNewActor();
-        if(actorList.get(user.GetID()) != null)
-            throw new LoginException("ID is already exist");
-        for (Map.Entry<String,Actor> ele : actorList.entrySet()) {
-            if(ele.getValue().GetPhoneNumber() == user.GetPhoneNumber())
-                throw new LoginException("Phone Number is already exist");
-        }
-        return user;
+        return function.apply(conn);
     }
     // #endregion
 
     /* **************************************** */
     // #region Private Methods
-    private DataHandler(){
-        actorList = new HashMap<>();
-        postList = new HashMap<>();
+    private DataHandler()
+    {
+        try{
+            myDriver = new com.mysql.jdbc.Driver();
+            DriverManager.registerDriver(myDriver);
+
+        }
+        catch (SQLException exc) {
+            System.out.println("Error: " + exc.getMessage());
+        }
     }
     // #endregion
 }

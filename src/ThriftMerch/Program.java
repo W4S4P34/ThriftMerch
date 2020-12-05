@@ -1,6 +1,9 @@
 package ThriftMerch;
 
+
 import Actor.Actor;
+import Actor.*;
+
 import DataController.DataHandler;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Controllers.IMainMenuViewController;
@@ -11,6 +14,7 @@ import MVCModel.Realizations.SignUpView;
 import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
 import MVCModel.Views.ISignUpView;
+
 
 import java.awt.CardLayout;
 import java.io.IOException;
@@ -50,7 +54,6 @@ public class Program extends JPanel {
 		    
 		    // #endregion
 	    private CardLayout cardLayout;
-
 	    private IMainMenuView mainMenuView;
 	    private ILoginView loginView;
 	    private ISignUpView signUpView;
@@ -99,7 +102,6 @@ public class Program extends JPanel {
     /* **************************************** */
     // #region Public Methods
     public void StartProgram() {
-        LoadAllData();
         
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -130,51 +132,6 @@ public class Program extends JPanel {
         });
     }
 
-    public void EndProgram() {
-        SaveAllData();
-    }
-    // #endregion
-
-    /* **************************************** */
-    // #region Private Methods
-    private Actor SignIn() {
-        Scanner scanner = new Scanner(System.in).useDelimiter("\n");
-        System.out.print("ID: ");
-        String ID = scanner.nextLine();
-        System.out.print("Password: ");
-        String password = scanner.nextLine();
-        try{
-            return DataHandler.GetInstance().SignIn(ID,password);
-        }
-        catch (Exception exc){
-            System.out.println("Error: " + exc.getMessage());
-        }
-        return null;
-    }
-
-    private Actor SignUp() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("1. Customer");
-        System.out.println("2. Shipper");
-        System.out.print("Choice: ");
-        try {
-            byte choice = scanner.nextByte();
-            return DataHandler.GetInstance().SignUp(choice);
-        }
-        catch (Exception exc)
-        {
-            System.out.println("Error: " + exc.getMessage());
-        }
-        return null;
-    }
-    
-    private void LoadAllData() {
-        // Load all data from file
-    }
-
-    private void SaveAllData(){
-        // Save all data to file
-    }
 
     // #endregion
     

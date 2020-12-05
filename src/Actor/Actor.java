@@ -28,11 +28,11 @@ public abstract class Actor {
 
     /* **************************************** */
     // #region Protected Fields
+    protected Account account;
     protected String name;
     protected byte age;
     protected String phoneNumber;
     protected String gender;
-    protected Account account;
     // #endregion
 
     /* **************************************** */
@@ -46,7 +46,7 @@ public abstract class Actor {
     // #endregion
 
     /* **************************************** */
-    // #region Getters and Setters
+    //#region Getters and Setters
     public String GetName() {
         return name;
     }
@@ -89,41 +89,20 @@ public abstract class Actor {
     // #endgion
 
     /* **************************************** */
-    // #region Public Methods
+    //#region Public Methods
     public Actor() {
         account = new Account("", "");
     }
-
-    public void CreateNewActor() {
-        Scanner scanner = new Scanner(System.in).useDelimiter("\n");
-
-        System.out.print("Name: ");
-        name = scanner.nextLine();
-
-        System.out.print("Age: ");
-        age = Byte.parseByte(scanner.nextLine());
-
-        System.out.print("Phone Number: ");
-        phoneNumber = scanner.nextLine();
-
-        System.out.print("Gender: ");
-        gender = scanner.nextLine();
-
-        System.out.print("ID: ");
-        account.ID = scanner.nextLine();
-
-        System.out.print("Password: ");
-        account.password = scanner.nextLine();
-
-        scanner.close();
+    public Actor SignIn(String id,String password){
+        return null;
     }
 
-    public abstract void LoadMenuGUI();
+
 
     // #endregion
 
     /* **************************************** */
-    // #region Private Methods
+    //#region Private Methods
 
-    // #endregion
+    //#endregion
 }
