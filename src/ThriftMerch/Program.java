@@ -1,10 +1,5 @@
 package ThriftMerch;
 
-
-import Actor.Actor;
-import Actor.*;
-
-import DataController.DataHandler;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Controllers.IMainMenuViewController;
 import MVCModel.Controllers.ISignUpViewController;
@@ -15,13 +10,12 @@ import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
 import MVCModel.Views.ISignUpView;
 
-
 import java.awt.CardLayout;
 import java.io.IOException;
-import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import java.lang.ClassNotFoundException;
@@ -32,12 +26,12 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Program extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	/* **************************************** */
-    // #region Private Fields
-    private Actor user = null;
-
-    // #endregion
+    // #region Public Fields
+	public static JFrame mainFrame;
+	
+	// #endregion
     
     /* **************************************** */
     // #region Main Panel
@@ -82,10 +76,41 @@ public class Program extends JPanel {
 	    /* **************************************** */
 	    // #region Controllers Implementation
 	    protected class MainMenuViewController implements IMainMenuViewController {
+			@Override
+			public void exitProgram() {
+				SwingUtilities.windowForComponent(MainPanel.this).dispose();
+			}
+
+			@Override
+			public void switchToSignIn() {
+				cardLayout.show(MainPanel.this, LOGIN_VIEW);
+			}
+
+			@Override
+			public void switchToSignUp() {
+				cardLayout.show(MainPanel.this, SIGNUP_VIEW);
+			}
 
 	    }
 	    
 	    protected class LoginViewController implements ILoginViewController {
+
+			@Override
+			public void backToMainMenu() {
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void signinSuccessful() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void signinFailed() {
+				// TODO Auto-generated method stub
+				
+			}
 
 	    }
 	    
@@ -108,7 +133,7 @@ public class Program extends JPanel {
             	try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
           
-	                JFrame mainFrame = new JFrame("ThriftMerch");
+	                mainFrame = new JFrame("ThriftMerch");
 	                mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
 					mainFrame.add(new MainPanel());
@@ -131,7 +156,6 @@ public class Program extends JPanel {
             }
         });
     }
-
 
     // #endregion
     
