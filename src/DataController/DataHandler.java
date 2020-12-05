@@ -77,7 +77,9 @@ public class DataHandler {
     // #region Private Methods
     private DataHandler()
     {
-        try{
+
+        try {
+
             myDriver = new com.mysql.cj.jdbc.Driver();
             DriverManager.registerDriver(myDriver);
         }
