@@ -55,7 +55,7 @@ public class Customer extends Actor {
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
-                var resultSet = stmt.executeQuery();
+                ResultSet resultSet = stmt.executeQuery();
                 if(resultSet.next())
                     return null;
                 sql = "insert into customer values(?,?,?,?,?,?,?)";

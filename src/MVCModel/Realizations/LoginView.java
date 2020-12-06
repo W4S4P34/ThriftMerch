@@ -20,7 +20,6 @@ import javax.swing.JTextField;
 import Actor.*;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Views.ILoginView;
-import Misc.ActorType;
 
 public class LoginView extends AbstractView<ILoginViewController> implements ILoginView {
 
@@ -205,11 +204,9 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 			else if (shipperRadioButton.isSelected()) {
 				actor = new Shipper().SignIn(username, password);
 			}
-			// TODO
+
 			if (actor != null) {
-				System.out.println(actor.GetActorType());
-				getViewController().signinSuccessful();
-				actor.Display();
+				getViewController().signinSuccessful(actor);
 			}
 			else {
 				getViewController().signinFailed();
