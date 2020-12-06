@@ -38,7 +38,8 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 	public MainMenuView(IMainMenuViewController viewController) throws IOException {
 		super(viewController);
 		setLayout(new BorderLayout());
-		System.out.println(System.getProperty("user.dir"));
+		// System.out.println(System.getProperty("user.dir"));
+
 		// Get background image
 		this.backgroundPanel = 
 				new BackgroundPanel(
