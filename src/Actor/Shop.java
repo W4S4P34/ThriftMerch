@@ -4,6 +4,7 @@ package Actor;
 import DataController.DataHandler;
 import Misc.ActorType;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,17 +23,15 @@ public class Shop extends Actor {
     @Override
     public Actor SignIn(String id, String password) {
         return DataHandler.GetInstance().SignIn((conn)->{
-            System.out.println("Shop query");
             String sql = "select * from shop where id = ? and password = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
-                stmt.setString(2,password);
+                stmt.setString(2,account.Hash(password));
                 ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
                 {
-                    System.out.println("Not null");
                     this.account.ID = resultSet.getString("id");
                     this.account.password = resultSet.getString("password");
                     this.name = resultSet.getString("name");
@@ -44,9 +43,8 @@ public class Shop extends Actor {
                 // Close resource
                 stmt.close();
                 conn.close();
-                System.out.println(actor);
                 return actor;
-            } catch (SQLException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) { }
 
             return null;
         });

@@ -4,10 +4,12 @@ package Actor;
 import DataController.DataHandler;
 import Misc.ActorType;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+
+
 
 public class Customer extends Actor {
     @Override
@@ -19,11 +21,12 @@ public class Customer extends Actor {
     @Override
     public Actor SignIn(String id, String password) {
         return DataHandler.GetInstance().SignIn((conn)->{
+            // Static getInstance method is called with hashing SHA
             String sql = "select * from customer where id = ? and password = ?";
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
-                stmt.setString(2,password);
+                stmt.setString(2,account.Hash(password));
                 ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
@@ -41,7 +44,7 @@ public class Customer extends Actor {
                 stmt.close();
                 conn.close();
                 return actor;
-            } catch (SQLException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) { }
             return null;
         });
     }
@@ -57,9 +60,9 @@ public class Customer extends Actor {
                     return null;
                 sql = "insert into customer values(?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
-                InitData(id, password, name, phoneNumber, address, age, gender);
+                InitData(id, account.Hash(password), name, phoneNumber, address, age, gender);
                 stmt.setString(1,id);
-                stmt.setString(2,password);
+                stmt.setString(2,account.Hash(password));
                 stmt.setString(3,name);
                 stmt.setString(4,phoneNumber);
                 stmt.setString(5,address);
@@ -71,7 +74,7 @@ public class Customer extends Actor {
                 stmt.close();
                 conn.close();
                 return this;
-            } catch (SQLException exc) {
+            } catch (SQLException | NoSuchAlgorithmException exc) {
                 try {
                     conn.rollback();
                 } catch (SQLException exception) { }

@@ -3,6 +3,7 @@ package Actor;
 import DataController.DataHandler;
 import Misc.ActorType;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +22,7 @@ public class Shipper extends Actor{
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
-                stmt.setString(2,password);
+                stmt.setString(2,account.Hash(password));
                 ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
@@ -39,7 +40,7 @@ public class Shipper extends Actor{
                 stmt.close();
                 conn.close();
                 return actor;
-            } catch (SQLException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) { }
             return null;
         });
     }
@@ -55,9 +56,9 @@ public class Shipper extends Actor{
                     return null;
                 sql = "insert into shipper values(?,?,?,?,?,?,?)";
                 stmt = conn.prepareStatement(sql);
-                InitData(id, password, name, phoneNumber, address, age, gender);
+                InitData(id, account.Hash(password), name, phoneNumber, address, age, gender);
                 stmt.setString(1,id);
-                stmt.setString(2,password);
+                stmt.setString(2,account.Hash(password));
                 stmt.setString(3,name);
                 stmt.setString(4,phoneNumber);
                 stmt.setString(5,address);
@@ -69,7 +70,7 @@ public class Shipper extends Actor{
                 stmt.close();
                 conn.close();
                 return this;
-            } catch (SQLException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) { }
             return null;
         });
     }

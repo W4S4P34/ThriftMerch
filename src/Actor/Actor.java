@@ -2,7 +2,12 @@ package Actor;
 
 import Misc.ActorType;
 
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public abstract class Actor {
 	/* **************************************** */
@@ -16,14 +21,22 @@ public abstract class Actor {
             this.ID = ID;
             this.password = password;
         }
- 
-        public Account HashAccount(String ID, String password)
-        {
-            return new Account(ID, Hash(password));
+
+        public String Hash(String content) throws NoSuchAlgorithmException {
+            final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+            return byteToHex(digest.digest(content.getBytes(StandardCharsets.UTF_8)));
         }
-        public String Hash(String content)
+        private String byteToHex(byte[] hash)
         {
-            return content;
+            BigInteger number = new BigInteger(1,hash);
+            // Convert message digest into hex value
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            // Pad with leading zeros
+            while (hexString.length() < 32)
+            {
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
         }
     }
     // #endregion
