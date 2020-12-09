@@ -17,6 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
+
 import Actor.*;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Views.ILoginView;
@@ -44,7 +45,7 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 	/* ****************************** */
 	// #region Construct Layout Process
 	public LoginView(ILoginViewController viewController) {
-		super(viewController);
+		super(viewController);      		
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createEmptyBorder(150, 120, 150, 120));
 		
@@ -94,12 +95,14 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 
 		constraints.fill = GridBagConstraints.NONE;
 		constraints.gridwidth = 3;
+		constraints.insets = new Insets(1, 3, 1, 3);
 		
 		mainPanel.add(username, constraints);
 		
 		// Reset Constraints
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridwidth = 1;
+		constraints.insets = new Insets(0, 0, 0, 0);
 		
 		// Add password label
 		passwordLabel = new JLabel("Password:", JLabel.RIGHT);
@@ -112,22 +115,23 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		
 		// Reset Constraints
 		
-		// Add username textfield
+		// Add password textfield
 		password = new JPasswordField(30);
 				
 		// Constraints
 		constraints.gridx = 1;
 		constraints.gridy = 2;
 		
-		constraints.gridwidth = 2;
-
 		constraints.fill = GridBagConstraints.NONE;
+		constraints.gridwidth = 3;
+		constraints.insets = new Insets(1, 3, 1, 3);
 		
 		mainPanel.add(password, constraints);
 		
 		// Reset Constraints
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridwidth = 1;
+		constraints.insets = new Insets(0, 0, 0, 0);
 		
 		// Add radio buttons -> Actors
 		JPanel radioButtonPanel = new JPanel();
@@ -138,7 +142,7 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		
 		JRadioButton shopRadioButton = new JRadioButton();
 		shopRadioButton.setText("Shop");
-		
+				
 		shopPanel.add(shopRadioButton);
 
 		// Customer button
@@ -162,6 +166,8 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		actorButtonGroup.add(shopRadioButton);
 		actorButtonGroup.add(customerRadioButton);
 		actorButtonGroup.add(shipperRadioButton);
+		
+		actorButtonGroup.setSelected( shopRadioButton.getModel(), true);
 		
 		// Add radio buttons panel to panel	
 		radioButtonPanel.add(shopPanel);
@@ -221,7 +227,7 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		
 		// Events
 		backButton.addActionListener((ActionEvent event) -> {
-			getViewController().backToMainMenu();
+			getViewController().switchToMainMenu();
 		});
 						
 		// Constraints

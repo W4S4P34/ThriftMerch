@@ -20,9 +20,11 @@ import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
 import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.io.IOException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -41,6 +43,10 @@ public class Program extends JPanel {
 	/* **************************************** */
     // #region Public Fields
 	public static JFrame mainFrame;
+	public static final String comName = "THRIFTMERCH";
+	
+	public static int _DEFAULT_SCREEN_WIDTH = 0;
+	public static int _DEFAULT_SCREEN_HEIGHT = 0;
 	
 	// #endregion
     
@@ -108,7 +114,7 @@ public class Program extends JPanel {
 			}
 
 			@Override
-			public void switchToSignIn() {
+			public void switchToSignIn() {			
 				cardLayout.show(MainPanel.this, LOGIN_VIEW);
 			}
 
@@ -122,14 +128,23 @@ public class Program extends JPanel {
 	    protected class LoginViewController implements ILoginViewController {
 
 			@Override
-			public void backToMainMenu() {
+			public void switchToMainMenu() {
+				/* 
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, 
+												_DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				*/
+				
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 			@Override
 			public void signinSuccessful(Actor actor) {
+				mainFrame.setSize(new Dimension(900, 600));
+				mainFrame.setLocationRelativeTo(null);
+				
 				switch (actor.GetActorType()) {
-				case SHOP:
+				case SHOP:				
 					cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
 					break;
 				case CUSTOMER:
@@ -145,13 +160,39 @@ public class Program extends JPanel {
 
 			@Override
 			public void signinFailed() {
-				// TODO Auto-generated method stub
-				
+				JOptionPane.showMessageDialog(mainFrame,
+					    "Username or password is not correct. "
+					    + "Please check again.",
+					    "Login Failed",
+					    JOptionPane.ERROR_MESSAGE);				
 			}
 
 	    }
 	    
 	    protected class SignUpViewController implements ISignUpViewController {
+
+			@Override
+			public void signupSuccessful(Actor actor) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void signupFailed() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void getMessage(String msg) {
+				// TODO Auto-generated method stub
+				
+			}
 	    	
 	    }
 	    
@@ -193,6 +234,9 @@ public class Program extends JPanel {
 	                mainFrame.setResizable(false);
 	 
 	                mainFrame.setVisible(true);
+	                
+	                _DEFAULT_SCREEN_WIDTH = mainFrame.getWidth();
+	                _DEFAULT_SCREEN_HEIGHT = mainFrame.getHeight();
 	                
                 } catch (IOException exception) {
 				  	System.out.println("Error: " + exception.getMessage());
