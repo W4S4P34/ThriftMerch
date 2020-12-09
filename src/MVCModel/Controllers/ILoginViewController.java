@@ -5,5 +5,5 @@ import Actor.Actor;
 public interface ILoginViewController extends IViewController {
 	public void signinSuccessful(Actor actor);
 	public void signinFailed();
-	public void backToMainMenu();
+	public void switchToMainMenu();
 }

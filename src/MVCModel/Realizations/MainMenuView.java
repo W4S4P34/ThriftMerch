@@ -2,6 +2,7 @@ package MVCModel.Realizations;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -13,11 +14,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 // import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import MVCModel.Controllers.IMainMenuViewController;
 import MVCModel.Views.IMainMenuView;
 import Misc.BackgroundPanel;
+import ThriftMerch.Program;
 
 public class MainMenuView extends AbstractView<IMainMenuViewController> implements IMainMenuView {
 
@@ -36,9 +39,8 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 	/* ****************************** */
 	// #region Construct Layout Process
 	public MainMenuView(IMainMenuViewController viewController) throws IOException {
-		super(viewController);
+		super(viewController);		
 		setLayout(new BorderLayout());
-		// System.out.println(System.getProperty("user.dir"));
 
 		// Get background image
 		this.backgroundPanel = 
@@ -81,8 +83,19 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 		// Add offset
 		offset_1 = new JPanel();
 		offset_1.setOpaque(false);
+		offset_1.setLayout(new BorderLayout());		
 		
 		// offset_1.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		// Add company's name
+		JLabel companyName = new JLabel(Program.comName);
+		companyName.setHorizontalAlignment(JLabel.CENTER);
+		companyName.setVerticalAlignment(JLabel.CENTER);
+		companyName.setFont(new Font(companyName.getFont().getName(),
+									 Font.BOLD, 21));
+		companyName.setForeground(Color.WHITE);
+		
+		offset_1.add(companyName, BorderLayout.CENTER);
 		
 		// Constraints
 		constraints.gridx = 0;
@@ -109,7 +122,7 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 		constraints.insets = new Insets(10, 20, 10, 20);
 				
 		region_1.add(signinButton, constraints);
-		
+				
 		// Events
 		signinButton.addActionListener((ActionEvent event) -> {
 			getViewController().switchToSignIn();
@@ -119,7 +132,7 @@ public class MainMenuView extends AbstractView<IMainMenuViewController> implemen
 		constraints.insets = new Insets(0, 0, 0, 0);
 				
 		// Add signup button
-		signupButton = new JButton("Signup");
+		signupButton = new JButton("Signup (Customer)");
 		
 		signupButton.setBackground(new Color(0, 0, 0, 0));
 		
