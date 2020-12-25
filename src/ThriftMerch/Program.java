@@ -159,10 +159,8 @@ public class Program extends JPanel {
 			}
 
 			@Override
-			public void signinFailed() {
-				JOptionPane.showMessageDialog(mainFrame,
-					    "Username or password is not correct. "
-					    + "Please check again.",
+			public void signinFailed(String message) {
+				JOptionPane.showMessageDialog(mainFrame,message,
 					    "Login Failed",
 					    JOptionPane.ERROR_MESSAGE);				
 			}
@@ -174,13 +172,17 @@ public class Program extends JPanel {
 			@Override
 			public void signupSuccessful(Actor actor) {
 				// TODO Auto-generated method stub
-				
+				JOptionPane.showMessageDialog(mainFrame,"Sign up successfully",
+						"Signup Failed",
+						JOptionPane.INFORMATION_MESSAGE);
 			}
 
 			@Override
-			public void signupFailed() {
+			public void signupFailed(String message) {
 				// TODO Auto-generated method stub
-				
+				JOptionPane.showMessageDialog(mainFrame,message,
+						"Signup Failed",
+						JOptionPane.ERROR_MESSAGE);
 			}
 
 			@Override

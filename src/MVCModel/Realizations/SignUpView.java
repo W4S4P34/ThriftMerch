@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import Actor.*;
 import MVCModel.Controllers.ISignUpViewController;
 import MVCModel.Views.ISignUpView;
 
@@ -202,7 +203,16 @@ public class SignUpView extends AbstractView<ISignUpViewController> implements I
 		
 		// Events
 		registerButton.addActionListener((ActionEvent event) -> {
-			
+			// Pass to another controller to handle -> Receive the result from it
+
+			String username = this.username.getText();
+			String password = new String(this.password.getPassword());
+			String name = this.name.getText();
+			String phone = this.phone.getText();
+			Actor actor = new Customer().SignUp(username,password,name,phone,"Address",getViewController()::signupFailed);
+			if(actor != null){
+				getViewController().signupSuccessful(actor);
+			}
 		});
 		
 		// Add back button

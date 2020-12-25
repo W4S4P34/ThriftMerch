@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 public class Shipper extends Actor{
     @Override
@@ -16,7 +17,12 @@ public class Shipper extends Actor{
     }
     //#region Core Methods
     @Override
-    public Actor SignIn(String id, String password) {
+    public Actor SignIn(String id, String password, Consumer<String> signInFailed) {
+        //Check valid input
+        if(id.equals("") || password.equals("")){
+            signInFailed.accept("Invalid input! Empty input.");
+            return null;
+        }
         return DataHandler.GetInstance().SignIn((conn)->{
             String sql = "select * from shipper where id = ? and password = ?";
             try {
@@ -39,13 +45,27 @@ public class Shipper extends Actor{
                 // Close resource
                 stmt.close();
                 conn.close();
+                if(actor == null){
+                    signInFailed.accept("Username or password is not correct.");
+                }
                 return actor;
-            } catch (SQLException | NoSuchAlgorithmException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) {
+                signInFailed.accept("Exception Error: " + exc.getMessage());
+            }
             return null;
         });
     }
     @Override
-    public Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender){
+    public Actor SignUp(String id,String password,String name,String phoneNumber,String address,Consumer<String> signUpFailed){
+        //Check valid input
+        if(id.equals("") || password.equals("") || phoneNumber.equals("") || address.equals("") || name.equals("")){
+            signUpFailed.accept("Invalid input! Empty input.");
+            return null;
+        }
+        if (!phoneNumber.matches("[0-9]+")){
+            signUpFailed.accept("Invalid phone number!");
+            return null;
+        }
         return DataHandler.GetInstance().SignUp((conn)->{
             String sql = "select id from shipper where id = ?";
             try {

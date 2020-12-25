@@ -2,6 +2,7 @@ package DataController;
 
 import Actor.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.function.Function;
 
 /*
@@ -15,7 +16,7 @@ public class DataHandler {
     private Driver myDriver;
     private final String DB_URL = "jdbc:mysql://localhost/qlch";
     private final String USER = "root";
-    private final String PASS = "";
+    private final String PASS = "password";
     // #endregion
 
 
@@ -40,7 +41,7 @@ public class DataHandler {
     // #region Public Methods
     public Actor SignIn(Function<Connection,Actor> function)
     {
-        Connection conn = null;
+        Connection conn;
         try{
             conn = DriverManager.getConnection(DB_URL,
                     USER, PASS);
@@ -56,7 +57,7 @@ public class DataHandler {
     }
     public Actor SignUp(Function<Connection,Actor> function)
     {
-        Connection conn = null;
+        Connection conn;
         try{
             conn = DriverManager.getConnection(DB_URL,
                     USER, PASS);
@@ -71,10 +72,116 @@ public class DataHandler {
         }
         return null;
     }
+    public ArrayList<Product> GetAllProducts(){
+        Connection conn;
+        try{
+            conn = DriverManager.getConnection(DB_URL,
+                    USER, PASS);
+            if(conn == null)
+                return null;
+            String sql = "select * from product";
+            Statement stmt = conn.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sql);
+            ArrayList<Product> listProduct = null;
+            if(resultSet.next()){
+                listProduct = new ArrayList<>();
+                do {
+                    String id = resultSet.getString("id");
+                    String name = resultSet.getString("name");
+                    String brand = resultSet.getString("brand");
+                    int price = resultSet.getInt("price");
+                    int quantity = resultSet.getInt("quantity");
+                    String imagePath = resultSet.getString("imagePath");
+                    Date date = resultSet.getDate("date");
+                    String description = resultSet.getString("description");
+                    listProduct.add(new Product(id, name,brand,price,quantity,imagePath,date,description));
+                }while (resultSet.next());
+            }
+            stmt.close();
+            conn.close();
+            return listProduct;
+        }
+        catch (SQLException exc)
+        {
+            System.out.println("Error: " + exc.getMessage());
+        }
+        return null;
+    }
+    public ArrayList<Product> GetNewArrivalsProducts(){
+        final int LIMIT = 5;
+        Connection conn;
+        try{
+            conn = DriverManager.getConnection(DB_URL,
+                    USER, PASS);
+            if(conn == null)
+                return null;
+            String sql = String.format("select * from product order by `date` desc limit %s",LIMIT);
+            Statement stmt = conn.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sql);
+            ArrayList<Product> listProduct = null;
+            if(resultSet.next()){
+                listProduct = new ArrayList<>();
+                do {
+                    String id = resultSet.getString("id");
+                    String name = resultSet.getString("name");
+                    String brand = resultSet.getString("brand");
+                    int price = resultSet.getInt("price");
+                    int quantity = resultSet.getInt("quantity");
+                    String imagePath = resultSet.getString("imagePath");
+                    Date date = resultSet.getDate("date");
+                    String description = resultSet.getString("description");
+                    listProduct.add(new Product(id,name,brand,price,quantity,imagePath,date,description));
+                }while (resultSet.next());
+            }
+            stmt.close();
+            conn.close();
+            return listProduct;
+        }
+        catch (SQLException exc)
+        {
+            System.out.println("Error: " + exc.getMessage());
+        }
+        return null;
+    }
     // #endregion
 
+    //#region Public methods for customers
+    public Product FindProduct(String productId){
+        Connection conn;
+        try{
+            conn = DriverManager.getConnection(DB_URL,
+                    USER, PASS);
+            if(conn == null)
+                return null;
+            String sql = "select * from product where product.id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1,productId);
+            ResultSet resultSet = stmt.executeQuery();
+            Product product = null;
+            if(resultSet.next()){
+                String id = resultSet.getString("id");
+                String name = resultSet.getString("name");
+                String brand = resultSet.getString("brand");
+                int price = resultSet.getInt("price");
+                int quantity = resultSet.getInt("quantity");
+                String imagePath = resultSet.getString("imagePath");
+                Date date = resultSet.getDate("date");
+                String description = resultSet.getString("description");
+                product = new Product(id,name,brand,price,quantity,imagePath,date,description);
+            }
+            stmt.close();
+            conn.close();
+            return product;
+        }
+        catch (SQLException exc)
+        {
+            System.out.println("Error: " + exc.getMessage());
+        }
+        return null;
+    }
+    //#endregion
     /* **************************************** */
-    // #region Private Methods
+    //#region Private Methods
     private DataHandler()
     {
         try {
@@ -85,5 +192,5 @@ public class DataHandler {
             System.out.println("Error: " + exc.getMessage());
         }
     }
-    // #endregion
+    //#endregion
 }

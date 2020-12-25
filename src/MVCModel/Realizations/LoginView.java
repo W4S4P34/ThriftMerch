@@ -202,20 +202,17 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 				   password = new String(this.password.getPassword());
 			
 			if (shopRadioButton.isSelected()) {
-				actor = new Shop().SignIn(username, password);
+				actor = new Shop().SignIn(username, password,getViewController()::signinFailed);
 			}
 			else if (customerRadioButton.isSelected()) {
-				actor = new Customer().SignIn(username, password);
+				actor = new Customer().SignIn(username, password,getViewController()::signinFailed);
 			}
 			else if (shipperRadioButton.isSelected()) {
-				actor = new Shipper().SignIn(username, password);
+				actor = new Shipper().SignIn(username, password,getViewController()::signinFailed);
 			}
 
 			if (actor != null) {
 				getViewController().signinSuccessful(actor);
-			}
-			else {
-				getViewController().signinFailed();
 			}
 			
 		});

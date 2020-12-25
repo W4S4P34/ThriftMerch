@@ -1,13 +1,14 @@
 package Actor;
 
+import DataController.Product;
 import Misc.ActorType;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.function.Consumer;
 
 public abstract class Actor {
 	/* **************************************** */
@@ -62,7 +63,8 @@ public abstract class Actor {
     // #endregion
 
     /* **************************************** */
-    //#region Getters and Setters
+
+    //#region Getters/Setters methods
     public String GetName() {
         return name;
     }
@@ -102,7 +104,7 @@ public abstract class Actor {
     public String GetPassword() {
         return account.password;
     }
-    // #endgion
+    //#endregion
 
     /* **************************************** */
     //#region Public Methods
@@ -110,13 +112,16 @@ public abstract class Actor {
         account = new Account("", "");
     }
     public abstract ActorType GetActorType();
-    public abstract Actor SignIn(String id,String password);
-    public abstract Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender);
+    public abstract Actor SignIn(String id, String password, Consumer<String> signInFailed);
+    public abstract Actor SignUp(String id,String password,String name,String phoneNumber,String address,Consumer<String> signInFailed);
     public abstract void Display();
-
-
     // #endregion
 
+    //#region Public virtual methods for customer
+    public void AddToCard(String productId){ }
+    public void RemoveItemFromCard(String productId){ }
+    public HashMap<String, Product> GetMyCard() { return null; }
+    //#endregion
     /* **************************************** */
     //#region Private Methods
 

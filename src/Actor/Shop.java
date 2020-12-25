@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 public class Shop extends Actor {
 
@@ -21,7 +22,12 @@ public class Shop extends Actor {
     }
     //#region Core Methods
     @Override
-    public Actor SignIn(String id, String password) {
+    public Actor SignIn(String id, String password, Consumer<String> signInFailed) {
+        //Check valid input
+        if(id.equals("") || password.equals("")){
+            signInFailed.accept("Invalid input! Empty input.");
+            return null;
+        }
         return DataHandler.GetInstance().SignIn((conn)->{
             String sql = "select * from shop where id = ? and password = ?";
             try {
@@ -43,14 +49,19 @@ public class Shop extends Actor {
                 // Close resource
                 stmt.close();
                 conn.close();
+                if(actor == null){
+                    signInFailed.accept("Username or password is not correct.");
+                }
                 return actor;
-            } catch (SQLException | NoSuchAlgorithmException exc) { }
+            } catch (SQLException | NoSuchAlgorithmException exc) {
+                signInFailed.accept("Exception Error: " + exc.getMessage());
+            }
 
             return null;
         });
     }
     @Override
-    public Actor SignUp(String id,String password,String name,String phoneNumber,String address,int age,String gender){
+    public Actor SignUp(String id,String password,String name,String phoneNumber,String address,Consumer<String> signInFailed){
         return null;
     }
     @Override
