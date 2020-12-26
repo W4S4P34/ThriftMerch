@@ -96,7 +96,7 @@ public class Customer extends Actor {
             } catch (SQLException | NoSuchAlgorithmException exc) {
                 try {
                     conn.rollback();
-                } catch (SQLException exception) { }
+                } catch (SQLException ignored) { }
                 System.out.println("Error: " + exc.getMessage());
             }
             return null;
@@ -113,7 +113,7 @@ public class Customer extends Actor {
     public void AddToCard(String productId){
         if(productId.equals(""))
             return;
-        Product product = DataHandler.GetInstance().FindProduct(productId);
+        Product product = DataHandler.GetInstance().GetProduct(productId);
         if(product != null){
             if(!myShoppingCard.containsKey(productId)){
                 myShoppingCard.put(productId,new Product(productId,product.GetName(),product.GetBrand(),
