@@ -4,5 +4,5 @@ import MVCModel.Controllers.ActorControllers.Customer.IDefaultCustomerViewContro
 import MVCModel.Views.IView;
 
 public interface IDefaultCustomerView extends IView<IDefaultCustomerViewController> {
-
+	public void updateProductView(int offset);
 }

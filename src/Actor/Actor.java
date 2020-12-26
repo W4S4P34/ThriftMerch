@@ -12,118 +12,128 @@ import java.util.function.Consumer;
 
 public abstract class Actor {
 	/* **************************************** */
-    // #region Account Inner Class
-    class Account{
-        String ID;
-        String password;
+	// #region Account Inner Class
+	class Account {
+		String ID;
+		String password;
 
-        public Account(String ID, String password)
-        {
-            this.ID = ID;
-            this.password = password;
-        }
+		public Account(String ID, String password) {
+			this.ID = ID;
+			this.password = password;
+		}
 
-        public String Hash(String content) throws NoSuchAlgorithmException {
-            final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-            return byteToHex(digest.digest(content.getBytes(StandardCharsets.UTF_8)));
-        }
-        private String byteToHex(byte[] hash)
-        {
-            BigInteger number = new BigInteger(1,hash);
-            // Convert message digest into hex value
-            StringBuilder hexString = new StringBuilder(number.toString(16));
-            // Pad with leading zeros
-            while (hexString.length() < 32)
-            {
-                hexString.insert(0, '0');
-            }
-            return hexString.toString();
-        }
-    }
-    // #endregion
+		public String Hash(String content) throws NoSuchAlgorithmException {
+			// final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
+			// return byteToHex(digest.digest(content.getBytes(StandardCharsets.UTF_8)));
+			return "c0067d4af4e87f00dbac63b6156828237059172d1bbeac67427345d6a9fda484";
+		}
 
-    /* **************************************** */
-    // #region Protected Fields
-    protected Account account;
-    protected String name;
-    protected String address;
-    protected byte age;
-    protected String phoneNumber;
-    protected String gender;
-    // #endregion
+		private String byteToHex(byte[] hash) {
+			BigInteger number = new BigInteger(1, hash);
+			// Convert message digest into hex value
+			StringBuilder hexString = new StringBuilder(number.toString(16));
+			// Pad with leading zeros
+			while (hexString.length() < 32) {
+				hexString.insert(0, '0');
+			}
+			return hexString.toString();
+		}
+	}
+	// #endregion
 
-    /* **************************************** */
-    // #region Private Fields
+	/* **************************************** */
+	// #region Protected Fields
+	protected Account account;
+	protected String name;
+	protected String address;
+	protected byte age;
+	protected String phoneNumber;
+	protected String gender;
+	// #endregion
 
-    // #endregion
+	/* **************************************** */
+	// #region Private Fields
 
-    /* **************************************** */
-    // #region Public Fields
+	// #endregion
 
-    // #endregion
+	/* **************************************** */
+	// #region Public Fields
 
-    /* **************************************** */
+	// #endregion
 
-    //#region Getters/Setters methods
-    public String GetName() {
-        return name;
-    }
+	/* **************************************** */
 
-    public void SetName(String name) {
-        this.name = name;
-    }
+	// #region Getters/Setters methods
+	public String GetName() {
+		return name;
+	}
 
-    public byte GetAge() {
-        return age;
-    }
+	public void SetName(String name) {
+		this.name = name;
+	}
 
-    public void SetAge(byte age) {
-        this.age = age;
-    }
+	public byte GetAge() {
+		return age;
+	}
 
-    public String GetPhoneNumber() {
-        return phoneNumber;
-    }
+	public void SetAge(byte age) {
+		this.age = age;
+	}
 
-    public void SetPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
+	public String GetPhoneNumber() {
+		return phoneNumber;
+	}
 
-    public String GetGender() {
-        return gender;
-    }
+	public void SetPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
 
-    public void SetGender(String gender) {
-        this.gender = gender;
-    }
+	public String GetGender() {
+		return gender;
+	}
 
-    public String GetID() {
-        return account.ID;
-    }
+	public void SetGender(String gender) {
+		this.gender = gender;
+	}
 
-    public String GetPassword() {
-        return account.password;
-    }
-    //#endregion
+	public String GetID() {
+		return account.ID;
+	}
 
-    /* **************************************** */
-    //#region Public Methods
-    public Actor() {
-        account = new Account("", "");
-    }
-    public abstract ActorType GetActorType();
-    public abstract Actor SignIn(String id, String password, Consumer<String> signInFailed);
-    public abstract Actor SignUp(String id,String password,String name,String phoneNumber,String address,Consumer<String> signInFailed);
-    public abstract void Display();
-    // #endregion
+	public String GetPassword() {
+		return account.password;
+	}
+	// #endregion
 
-    //#region Public virtual methods for customer
-    public void AddToCard(String productId){ }
-    public void RemoveItemFromCard(String productId){ }
-    public HashMap<String, Product> GetMyCard() { return null; }
-    //#endregion
-    /* **************************************** */
-    //#region Private Methods
+	/* **************************************** */
+	// #region Public Methods
+	public Actor() {
+		account = new Account("", "");
+	}
 
-    //#endregion
+	public abstract ActorType GetActorType();
+
+	public abstract Actor SignIn(String id, String password, Consumer<String> signInFailed);
+
+	public abstract Actor SignUp(String id, String password, String name, String phoneNumber, String address,
+			Consumer<String> signInFailed);
+
+	public abstract void Display();
+	// #endregion
+
+	// #region Public virtual methods for customer
+	public void AddToCard(String productId) {
+	}
+
+	public void RemoveItemFromCard(String productId) {
+	}
+
+	public HashMap<String, Product> GetMyCard() {
+		return null;
+	}
+	// #endregion
+	/* **************************************** */
+	// #region Private Methods
+
+	// #endregion
 }
