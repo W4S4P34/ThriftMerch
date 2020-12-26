@@ -212,7 +212,7 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 			}
 
 			if (actor != null) {
-				getViewController().signinSuccessful(actor);
+					getViewController().signinSuccessful(actor);
 			}
 			
 		});
