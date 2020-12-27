@@ -1,13 +1,10 @@
 package Actor;
 
-
-import DataController.DataHandler;
+import DataController.*;
 import Misc.ActorType;
+import Utils.*;
 
-import java.security.NoSuchAlgorithmException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.function.Consumer;
 
 public class Shop extends Actor {
@@ -33,7 +30,7 @@ public class Shop extends Actor {
             try {
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1,id);
-                stmt.setString(2,account.Hash(password));
+                stmt.setString(2, SHA256Digest.Hash(password));
                 ResultSet resultSet = stmt.executeQuery();
                 Actor actor = null;
                 if(resultSet.next())
@@ -53,7 +50,7 @@ public class Shop extends Actor {
                     signInFailed.accept("Username or password is not correct.");
                 }
                 return actor;
-            } catch (SQLException | NoSuchAlgorithmException exc) {
+            } catch (SQLException exc) {
                 signInFailed.accept("Exception Error: " + exc.getMessage());
             }
 

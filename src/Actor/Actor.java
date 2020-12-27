@@ -1,12 +1,9 @@
 package Actor;
 
-import DataController.Product;
+import DataController.*;
 import Misc.ActorType;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
@@ -21,23 +18,6 @@ public abstract class Actor {
 			this.ID = ID;
 			this.password = password;
 		}
-
-		public String Hash(String content) throws NoSuchAlgorithmException {
-			// final MessageDigest digest = MessageDigest.getInstance("SHA3-256");
-			// return byteToHex(digest.digest(content.getBytes(StandardCharsets.UTF_8)));
-			return "c0067d4af4e87f00dbac63b6156828237059172d1bbeac67427345d6a9fda484";
-		}
-
-		private String byteToHex(byte[] hash) {
-			BigInteger number = new BigInteger(1, hash);
-			// Convert message digest into hex value
-			StringBuilder hexString = new StringBuilder(number.toString(16));
-			// Pad with leading zeros
-			while (hexString.length() < 32) {
-				hexString.insert(0, '0');
-			}
-			return hexString.toString();
-		}
 	}
 	// #endregion
 
@@ -46,8 +26,8 @@ public abstract class Actor {
 	protected Account account;
 	protected String name;
 	protected String address;
-	protected byte age;
 	protected String phoneNumber;
+	protected byte age;
 	protected String gender;
 	// #endregion
 
@@ -67,39 +47,30 @@ public abstract class Actor {
 	public String GetName() {
 		return name;
 	}
-
 	public void SetName(String name) {
 		this.name = name;
 	}
-
-	public byte GetAge() {
-		return age;
-	}
-
-	public void SetAge(byte age) {
-		this.age = age;
-	}
-
 	public String GetPhoneNumber() {
 		return phoneNumber;
 	}
-
 	public void SetPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
 	}
-
-	public String GetGender() {
-		return gender;
+	public String GetAddress(){
+		return address;
 	}
-
-	public void SetGender(String gender) {
+	public void SetAddress(String address){
+		this.address = address;
+	}
+	public void SetAge(byte age){
+		this.age = age;
+	}
+	public void SetGender(String gender){
 		this.gender = gender;
 	}
-
 	public String GetID() {
 		return account.ID;
 	}
-
 	public String GetPassword() {
 		return account.password;
 	}
@@ -121,17 +92,34 @@ public abstract class Actor {
 	public abstract void Display();
 	// #endregion
 
-	// #region Public virtual methods for customer
+	//#region Public virtual methods for customer
 	public void AddToCard(String productId) {
 	}
-
 	public void RemoveItemFromCard(String productId) {
 	}
-
 	public HashMap<String, Product> GetMyCard() {
 		return null;
 	}
-	// #endregion
+	public boolean MakeOrder(){ return false; }
+	public ArrayList<Order> ViewMyOrder() { return null; }
+	//#endregion
+
+	//#region Public virtual methods for shipper
+	public ArrayList<Order> ViewAllOrphanedOrder(){
+		return null;
+	}
+	public void UpdateOrder(String orderId, ORDERSTATUS orderStatus) { }
+	//#endregion
+
+	//#region Public virtual methods for shop
+	public void AddNewProduct(){
+
+	}
+	public void UpdateProduct(){
+
+	}
+	//#endregion
+
 	/* **************************************** */
 	// #region Private Methods
 

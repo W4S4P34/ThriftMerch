@@ -1,8 +1,12 @@
 package DataController;
 
 import Actor.*;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /*
@@ -161,7 +165,7 @@ public class DataHandler {
 	}
 	// #endregion
 
-	// #region Public methods for customers
+	//#region Public methods for customers
 	/*
 	 * Get a product by their ID
 	 */
@@ -195,14 +199,13 @@ public class DataHandler {
 		}
 		return null;
 	}
-
 	public ArrayList<Product> SearchProducts(String request) {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			if (conn == null)
 				return null;
-			String sql = String.format("select * from product where match(name,brand) against ('%s')", request);
+			String sql = String.format("select * from product where match(name,brand,description) against ('%s')", request);
 			Statement stmt = conn.createStatement();
 			ResultSet resultSet = stmt.executeQuery(sql);
 			ArrayList<Product> listProduct = null;
@@ -228,10 +231,162 @@ public class DataHandler {
 		}
 		return null;
 	}
+	public boolean MakeOrder(String orderId, int totalPrice ,HashMap<String,Product> orderItem,String customerId,String date){
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return false;
+			conn.setAutoCommit(false);
+			String sql = "insert into `order` values (?,?,?,?,?,?)";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,orderId);
+			stmt.setInt(2,ORDERSTATUS.PLACED.GetValue());
+			stmt.setInt(3,totalPrice);
+			stmt.setString(4,customerId);
+			stmt.setString(5,null);
+			stmt.setString(6,date);
+			if(stmt.executeUpdate() == 0){
+				System.out.println("Error: " + "insert into order failed");
+				return false;
+			}
+			for (Map.Entry<String,Product> item : orderItem.entrySet()) {
+				sql = "insert into `orderItem` values (?,?,?)";
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1,item.getValue().GetId());
+				stmt.setString(2,orderId);
+				stmt.setInt(3,item.getValue().GetQuantity());
+				if(stmt.executeUpdate() == 0){
+					System.out.println("Error: " + "insert into orderItem failed");
+					return false;
+				}
+			}
+			// Close resource
+			conn.commit();
+			stmt.close();
+			conn.close();
+			return true;
+		}catch (SQLException exc){
+			try {
+				conn.rollback();
+			} catch (SQLException ignored) { }
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return false;
+	}
+	public ArrayList<Order> ViewMyOrder(Function<Connection,ArrayList<Order>> function){
+		Connection conn;
+		try{
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return null;
+			return function.apply(conn);
+		}catch (SQLException exc){
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return null;
+	}
+	//#endregion
 
-	// #endregion
+	//#region Public methods for shipper
+	public ArrayList<Order> ViewAllOrphanedOrder(){
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			if (conn == null)
+				return null;
+			String sql = "select * from `order` where status = 0";
+			Statement stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(sql);
+			ArrayList<Order> listOrder = null;
+			if (resultSet.next()) {
+				listOrder = new ArrayList<>();
+				do {
+					String id = resultSet.getString("id");
+					int totalPrice = resultSet.getInt("totalPrice");
+					String customerId = resultSet.getString("customerId");
+					Date date = resultSet.getDate("date");
+					ArrayList<Product> listOrderItem = GetOrderItem(id,conn);
+					Customer customer = GetCustomer(customerId,conn);
+					listOrder.add(new Order(id,date,ORDERSTATUS.SetValue(0),listOrderItem,totalPrice,null,customer));
+				} while (resultSet.next());
+			}
+			stmt.close();
+			conn.close();
+			return listOrder;
+		} catch (SQLException exc) {
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return null;
+	}
+	public void UpdateOrder(Consumer<Connection> consumer){
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return;
+			conn.setAutoCommit(false);
+			consumer.accept(conn);
+		}catch (SQLException exc){
+			try {
+				conn.rollback();
+			}catch (SQLException ignore) { }
+			System.out.println("Error: " + exc.getMessage());
+		}
+	}
+	//#endregion
+
 	/* **************************************** */
 	// #region Private Methods
+	public ArrayList<Product> GetOrderItem(String orderId,Connection conn) throws SQLException {
+		String sql = "select *,`orderItem`.quantity as itemQuantity from `orderItem` join `product` on productId = id and orderId = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1,orderId);
+		ResultSet resultSet = stmt.executeQuery();
+		ArrayList<Product> listOrderItem = null;
+		if(resultSet.next()){
+			listOrderItem = new ArrayList<>();
+			do {
+				String id = resultSet.getString("id");
+				String name = resultSet.getString("name");
+				String brand = resultSet.getString("brand");
+				int price = resultSet.getInt("price");
+				int quantity = resultSet.getInt("itemQuantity");
+				String imagePath = resultSet.getString("imagePath");
+				Date date = resultSet.getDate("date");
+				String description = resultSet.getString("description");
+				listOrderItem.add(new Product(id, name, brand, price, quantity, imagePath, date, description));
+			}while (resultSet.next());
+		}
+		return listOrderItem;
+	}
+	public Customer GetCustomer(String customerId,Connection conn) throws SQLException {
+		String sql = "select * from `customer` where id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1,customerId);
+		ResultSet resultSet = stmt.executeQuery();
+		Customer customer = null;
+		if(resultSet.next()){
+			customer = new Customer(resultSet.getString("name"),resultSet.getString("phone_number"),resultSet.getString("address"));
+		}
+		return customer;
+	}
+	public Shipper GetShipper(String shipperId,Connection conn) throws SQLException {
+		String sql = "select * from `shipper` where id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1,shipperId);
+		ResultSet resultSet = stmt.executeQuery();
+		Shipper shipper = null;
+		if(resultSet.next()){
+			shipper = new Shipper();
+			shipper.SetName(resultSet.getString("name"));
+			shipper.SetAddress(resultSet.getString("address"));
+			shipper.SetPhoneNumber(resultSet.getString("phone_number"));
+			shipper.SetAge((byte)resultSet.getInt("age"));
+			shipper.SetGender(resultSet.getString("gender"));
+		}
+		return shipper;
+	}
 	private DataHandler() {
 		try {
 			Driver myDriver = new com.mysql.cj.jdbc.Driver();

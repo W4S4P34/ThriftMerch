@@ -5,11 +5,7 @@ import Actor.*;
 import java.sql.Date;
 import java.util.ArrayList;
 
-enum ORDERSTATUS {
-    PLACED,
-    PROCESSED,
-    DELIVERED
-}
+
 
 public class Order {
     private String id;
@@ -18,14 +14,16 @@ public class Order {
     private ArrayList<Product> orderItem = new ArrayList<>();
     private int totalPrice;
     private Shipper shipper;
+    private Customer customer;
 
-    public Order(String id, Date date, ORDERSTATUS status, ArrayList<Product> orderItem,int totalPrice,Shipper shipper){
+    public Order(String id, Date date, ORDERSTATUS status, ArrayList<Product> orderItem,int totalPrice,Shipper shipper,Customer customer){
         this.id = id;
         this.date = date;
         this.status = status;
         this.orderItem = orderItem;
         this.totalPrice = totalPrice;
         this.shipper = shipper;
+        this.customer = customer;
     }
 
     //#region Getters/Setters Methods
@@ -47,5 +45,6 @@ public class Order {
     public Shipper GetShipper(){
         return shipper;
     }
+    public Customer GetCustomer() { return customer; }
     //#endregion
 }
