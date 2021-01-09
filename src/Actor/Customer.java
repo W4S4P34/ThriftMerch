@@ -118,7 +118,7 @@ public class Customer extends Actor {
         System.out.println("Phone number: " + phoneNumber);
     }
     @Override
-    public void AddToCard(String productId){
+    public void AddToCart(String productId){
         if(productId.equals(""))
             return;
         Product product = DataHandler.GetInstance().GetProduct(productId);
@@ -133,7 +133,7 @@ public class Customer extends Actor {
     }
 
     @Override
-    public void RemoveItemFromCard(String productId) {
+    public void RemoveItemFromCart(String productId) {
         if(myShoppingCart != null && !myShoppingCart.isEmpty() && myShoppingCart.containsKey(productId)){
             Product product = myShoppingCart.get(productId);
             product.SetQuantity(product.GetQuantity()-1);
@@ -144,7 +144,7 @@ public class Customer extends Actor {
     }
 
     @Override
-    public HashMap<String,Product> GetMyCard() {
+    public HashMap<String,Product> GetMyCart() {
         if(myShoppingCart == null || myShoppingCart.size() == 0)
             return null;
         return myShoppingCart;

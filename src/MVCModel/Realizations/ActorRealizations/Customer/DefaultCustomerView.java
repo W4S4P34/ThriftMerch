@@ -45,14 +45,15 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	// #region Swing Components
 
 	private JLabel appTitle, searchLabel;
-	private JLabel productNameLabel, productBrandLabel, productPriceLabel;
+	private JLabel productNameLabel, productBrandLabel, productPriceLabel, productStatusLabel;
 	private JLabel productImageLabel;
 
 	private JScrollPane productScrollPanel;
 
 	private JPanel titlePanel, footerPanel, utilsPanel;
 	private JPanel productPanel, contentPanel, productRowPanel, productInfoPanel;
-	private JPanel productImagePanel, productNamePanel, productBrandPanel, productPricePanel, productButtonPanel;
+	private JPanel productImagePanel, productNamePanel, productBrandPanel, productPricePanel, productButtonPanel,
+			productStatusPanel;
 
 	private JButton productAddToCartButton, productDetailsButton;
 
@@ -62,6 +63,9 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	private JTextField searchTextField;
 	private JButton searchButton;
+	private JButton endSearchButton;
+
+	private JButton cartButton, logoutButton;
 
 	// #endregion
 
@@ -84,11 +88,28 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		appTitle.setForeground(Color.WHITE);
 		appTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
+		Image logoutImage = ImageIO.read(new File("Resources/Images/logout.png"));
+		Icon logoutIcon = new ImageIcon(getScaledImage(logoutImage, 32, 32));
+		logoutButton = new JButton(logoutIcon);
+		logoutButton.setBackground(new Color(30, 30, 30));
+
+		logoutButton.addActionListener((ActionEvent e) -> {
+			getViewController().switchToMainMenu();
+		});
+
+		Image cartImage = ImageIO.read(new File("Resources/Images/shopping_cart.png"));
+		Icon cartIcon = new ImageIcon(getScaledImage(cartImage, 32, 32));
+		cartButton = new JButton(cartIcon);
+		cartButton.setBackground(new Color(30, 30, 30));
+
+		titlePanel.add(logoutButton, BorderLayout.LINE_START);
 		titlePanel.add(appTitle, BorderLayout.CENTER);
+		titlePanel.add(cartButton, BorderLayout.LINE_END);
 
 		/* *********************** */
 		// Add product panel
 		productPanel = new JPanel(null);
+		// productPanel = new JPanel(new BorderLayout());
 		productPanel.setBackground(new Color(0, 0, 0, 150));
 
 		contentPanel = new JPanel();
@@ -109,40 +130,82 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		/* *********************** */
 		// Add footer with utilities
-		footerPanel = new JPanel(null);
+		// footerPanel = new JPanel(null);
+		footerPanel = new JPanel(new BorderLayout());
 		footerPanel.setBackground(new Color(30, 30, 30));
 		footerPanel.setPreferredSize(new Dimension(_MODIFIED_SCREEN_WIDTH, 55));
 
 		SpringLayout springUtilsPanelLayout = new SpringLayout();
 		utilsPanel = new JPanel(springUtilsPanelLayout);
 		utilsPanel.setBackground(new Color(30, 30, 30));
-		utilsPanel.setBounds(30, 5, 840, 45);
+		// utilsPanel.setBounds(30, 5, 840, 45);
+
+		// utilsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 		searchLabel = new JLabel("Search: ");
 		searchLabel.setFont(new Font("Verdana", Font.BOLD, 18));
 		searchLabel.setForeground(Color.WHITE);
 		searchLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchLabel, 5, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchLabel, 10, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchLabel, 45, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchLabel, 16, SpringLayout.NORTH, utilsPanel);
 
 		searchTextField = new JTextField(45);
 
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchTextField, 125, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchTextField, 19, SpringLayout.NORTH, utilsPanel);
+
 		searchTextField.addActionListener((ActionEvent e) -> {
-			System.out.println("Press Enter");
+
 		});
 
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchTextField, 85, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchTextField, 13, SpringLayout.NORTH, utilsPanel);
-
 		searchButton = new JButton("Search");
-
 		searchButton.setBackground(new Color(30, 30, 30));
 
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchButton, 455, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchButton, 11, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchButton, 495, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchButton, 17, SpringLayout.NORTH, utilsPanel);
 
-		searchButton.addActionListener((ActionEvent event) -> {
+		searchButton.addActionListener((ActionEvent e) -> {
+			String searchText = searchTextField.getText();
+			if (!searchText.contentEquals("")) {
+
+				updateSearchProductView(searchText);
+
+				if (endSearchButton == null) {
+					endSearchButton = new JButton("Clear");
+					endSearchButton.setBackground(new Color(30, 30, 30));
+
+					springUtilsPanelLayout.putConstraint(SpringLayout.WEST, endSearchButton, 565, SpringLayout.WEST,
+							utilsPanel);
+					springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, endSearchButton, 17, SpringLayout.NORTH,
+							utilsPanel);
+
+					endSearchButton.addActionListener((ActionEvent endEvent) -> {
+						searchTextField.setText("");
+						utilsPanel.remove(endSearchButton);
+						endSearchButton = null;
+
+						updateProductView(1);
+
+						utilsPanel.getParent().validate();
+						utilsPanel.getParent().repaint();
+					});
+
+					utilsPanel.add(endSearchButton);
+					utilsPanel.getParent().validate();
+					utilsPanel.getParent().repaint();
+				}
+			} else {
+				if (endSearchButton != null) {
+					utilsPanel.remove(endSearchButton);
+					endSearchButton = null;
+
+					updateProductView(1);
+
+					utilsPanel.getParent().validate();
+					utilsPanel.getParent().repaint();
+				}
+			}
 
 		});
 
@@ -155,8 +218,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image leftImage = ImageIO.read(new File("Resources/Images/left-arrow.png"));
 		Icon leftIcon = new ImageIcon(getScaledImage(leftImage, 12, 12));
 		leftButton = new JButton(leftIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, leftButton, 625, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, leftButton, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, leftButton, 665, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, leftButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		leftButton.setPreferredSize(new Dimension(20, 20));
 		leftButton.setBackground(new Color(30, 30, 30));
@@ -177,8 +240,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image rightImage = ImageIO.read(new File("Resources/Images/right-arrow.png"));
 		Icon rightIcon = new ImageIcon(getScaledImage(rightImage, 12, 12));
 		rightButton = new JButton(rightIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, rightButton, 700, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, rightButton, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, rightButton, 740, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, rightButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		rightButton.setPreferredSize(new Dimension(20, 20));
 		rightButton.setBackground(new Color(30, 30, 30));
@@ -199,8 +262,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image backwardImage = ImageIO.read(new File("Resources/Images/backward.png"));
 		Icon backwardIcon = new ImageIcon(getScaledImage(backwardImage, 12, 12));
 		backwardButton = new JButton(backwardIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, backwardButton, 600, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, backwardButton, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, backwardButton, 640, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, backwardButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		backwardButton.setPreferredSize(new Dimension(20, 20));
 		backwardButton.setBackground(new Color(30, 30, 30));
@@ -218,8 +281,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image forwardImage = ImageIO.read(new File("Resources/Images/forward.png"));
 		Icon forwardIcon = new ImageIcon(getScaledImage(forwardImage, 12, 12));
 		forwardButton = new JButton(forwardIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, forwardButton, 725, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, forwardButton, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, forwardButton, 765, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, forwardButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		forwardButton.setPreferredSize(new Dimension(20, 20));
 		forwardButton.setBackground(new Color(30, 30, 30));
@@ -247,8 +310,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		numberFormatter.setOverwriteMode(false);
 
 		pageTextField = new JFormattedTextField(numberFormatter);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 650, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 690, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 18, SpringLayout.NORTH, utilsPanel);
 
 		pageTextField.setValue(new Integer(1));
 		pageTextField.setColumns(5);
@@ -266,8 +329,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		});
 
 		pageRecordLabel = new JLabel("of " + String.valueOf(pageSize));
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageRecordLabel, 750, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageRecordLabel, 12, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageRecordLabel, 790, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageRecordLabel, 18, SpringLayout.NORTH, utilsPanel);
 
 		pageRecordLabel.setFont(new Font("Verdana", Font.BOLD, 15));
 		pageRecordLabel.setForeground(Color.WHITE);
@@ -293,13 +356,31 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	// #region Helpers
 	@Override
 	public void updateProductView(int offset) {
+		productList = DataHandler.GetInstance().GetAllProducts(_PRODUCT_LIMIT_ON_PAGE, offset);
+		repaintContentPanel(productList);
+	}
+
+	@Override
+	public void updateSearchProductView(String products) {
+		productList = DataHandler.GetInstance().SearchProducts(products);
+		repaintContentPanel(productList);
+	}
+
+	@Override
+	public void repaintContentPanel(ArrayList<Product> productList) {
 		contentPanel.removeAll();
+		/* ****************************************************** */
+		if (productList == null) {
+			contentPanel.getParent().validate();
+			contentPanel.getParent().repaint();
+
+			return;
+		}
+
 		/* ****************************************************** */
 		// Add Content Panel
 		int _DEFAULT_PRODUCT_FRAME_WIDTH = 205;
-		int _DEFAULT_PRODUCT_FRAME_HEIGHT = 400;
-
-		productList = DataHandler.GetInstance().GetAllProducts(_PRODUCT_LIMIT_ON_PAGE, offset);
+		int _DEFAULT_PRODUCT_FRAME_HEIGHT = 450;
 
 		int availableProductSize = productList.size();
 		int rowNumber = (int) Math.ceil(availableProductSize / (float) _PRODUCT_LIMIT_ON_ROW);
@@ -356,6 +437,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 						SwingConstants.LEFT);
 				productNameLabel.setFont(new Font("Verdana", Font.BOLD, 12));
 				productNameLabel.setForeground(Color.WHITE);
+				productNameLabel.setToolTipText(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetName());
 
 				productNamePanel.add(productNameLabel, BorderLayout.CENTER);
 
@@ -368,6 +450,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 						SwingConstants.LEFT);
 				productBrandLabel.setFont(new Font("Verdana", Font.BOLD, 16));
 				productBrandLabel.setForeground(Color.WHITE);
+				productBrandLabel.setToolTipText(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetBrand());
 
 				productBrandPanel.add(productBrandLabel, BorderLayout.CENTER);
 
@@ -385,9 +468,30 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productPricePanel.add(productPriceLabel, BorderLayout.CENTER);
 
 				/* *********************************** */
-				productButtonPanel = new JPanel(new GridLayout(1, 2));
+				productStatusPanel = new JPanel(new BorderLayout());
+				productStatusPanel.setBackground(new Color(100, 100, 100));
+				productStatusPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+				int quantity = productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetQuantity();
+				// int quantity = 0;
+				
+				if (quantity > 0) {
+					productStatusLabel = new JLabel("In-stock: " + String.valueOf(quantity), SwingConstants.LEFT);
+					productStatusLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+					productStatusLabel.setForeground(Color.WHITE);
+				}
+				else {
+					productStatusLabel = new JLabel("SOLD OUT");
+					productStatusLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+					productStatusLabel.setForeground(Color.RED);
+				}
+
+				productStatusPanel.add(productStatusLabel);
+
+				/* *********************************** */
+				productButtonPanel = new JPanel(new GridLayout(2, 1));
 				productButtonPanel.setBackground(new Color(100, 100, 100));
-				productButtonPanel.setPreferredSize(new Dimension(_DEFAULT_PRODUCT_FRAME_WIDTH, 30));
+				productButtonPanel.setPreferredSize(new Dimension(_DEFAULT_PRODUCT_FRAME_WIDTH, 100));
 
 				productAddToCartButton = new JButton("Add to Cart");
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
@@ -399,8 +503,11 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productDetailsButton = new JButton("Details");
 				productDetailsButton.setBackground(new Color(100, 100, 100));
 
-				productDetailsButton.addActionListener((ActionEvent event) -> {
+				int row = i, col = j;
 
+				productDetailsButton.addActionListener((ActionEvent event) -> {
+					getViewController().switchToDetails(DataHandler.GetInstance()
+							.GetProduct(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetId()));
 				});
 
 				productButtonPanel.add(productAddToCartButton);
@@ -411,6 +518,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productInfoPanel.add(productNamePanel);
 				productInfoPanel.add(productBrandPanel);
 				productInfoPanel.add(productPricePanel);
+				productInfoPanel.add(productStatusPanel);
 				productInfoPanel.add(productButtonPanel);
 
 				productRowPanel.add(productInfoPanel);
@@ -423,6 +531,23 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		contentPanel.getParent().validate();
 		contentPanel.getParent().repaint();
+	}
+
+	@Override
+	public void resetView() {
+		updateProductView(1);
+
+		pageTextField.setValue(new Integer(1));
+
+		searchTextField.setText("");
+
+		if (endSearchButton != null) {
+			utilsPanel.remove(endSearchButton);
+			endSearchButton = null;
+		}
+
+		utilsPanel.getParent().validate();
+		utilsPanel.getParent().repaint();
 	}
 
 	private Image getScaledImage(Image srcImg, int w, int h) {

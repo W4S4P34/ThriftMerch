@@ -4,18 +4,21 @@ import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Controllers.IMainMenuViewController;
 import MVCModel.Controllers.ISignUpViewController;
 import MVCModel.Controllers.ActorControllers.Customer.IDefaultCustomerViewController;
+import MVCModel.Controllers.ActorControllers.Customer.IDetailsCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IDefaultShopViewController;
 import MVCModel.Realizations.LoginView;
 import MVCModel.Realizations.MainMenuView;
 import MVCModel.Realizations.SignUpView;
 import MVCModel.Realizations.ActorRealizations.Customer.DefaultCustomerView;
+import MVCModel.Realizations.ActorRealizations.Customer.DetailsCustomerView;
 import MVCModel.Realizations.ActorRealizations.Shipper.DefaultShipperView;
 import MVCModel.Realizations.ActorRealizations.Shop.DefaultShopView;
 import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
 import MVCModel.Views.ISignUpView;
 import MVCModel.Views.ActorViews.Customer.IDefaultCustomerView;
+import MVCModel.Views.ActorViews.Customer.IDetailsCustomerView;
 import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
 import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
 
@@ -35,6 +38,7 @@ import java.lang.IllegalAccessException;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import Actor.Actor;
+import DataController.Product;
 
 public class Program extends JPanel {
 
@@ -66,6 +70,8 @@ public class Program extends JPanel {
 		protected static final String DEFAULTSHOP_VIEW = "View.shop.default";
 		protected static final String DEFAULTSHIPPER_VIEW = "View.shipper.default";
 
+		protected static final String DETAILSCUSTOMER_VIEW = "View.customer.details";
+
 		// #endregion
 		private CardLayout cardLayout;
 		private IMainMenuView mainMenuView;
@@ -75,6 +81,8 @@ public class Program extends JPanel {
 		private IDefaultShopView defaultShopView;
 		private IDefaultCustomerView defaultCustomerView;
 		private IDefaultShipperView defaultShipperView;
+
+		private IDetailsCustomerView detailsCustomerView;
 
 		// #endregion
 
@@ -92,6 +100,8 @@ public class Program extends JPanel {
 			defaultCustomerView = new DefaultCustomerView(new DefaultCustomerViewController());
 			defaultShipperView = new DefaultShipperView(new DefaultShipperViewController());
 
+			detailsCustomerView = new DetailsCustomerView(new DetailsCustomerViewController());
+
 			add(mainMenuView.getView(), MAINMENU_VIEW);
 			add(loginView.getView(), LOGIN_VIEW);
 			add(signUpView.getView(), SIGNUP_VIEW);
@@ -99,6 +109,8 @@ public class Program extends JPanel {
 			add(defaultShopView.getView(), DEFAULTSHOP_VIEW);
 			add(defaultCustomerView.getView(), DEFAULTCUSTOMER_VIEW);
 			add(defaultShipperView.getView(), DEFAULTSHIPPER_VIEW);
+
+			add(detailsCustomerView.getView(), DETAILSCUSTOMER_VIEW);
 
 			cardLayout.show(this, MAINMENU_VIEW);
 		}
@@ -144,7 +156,7 @@ public class Program extends JPanel {
 					cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
 					break;
 				case CUSTOMER:
-					defaultCustomerView.updateProductView(1);
+					defaultCustomerView.resetView();
 					defaultCustomerView.getViewController().setActor(actor);
 
 					cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
@@ -191,7 +203,7 @@ public class Program extends JPanel {
 		}
 
 		protected class DefaultShopViewController implements IDefaultShopViewController {
-
+			// TODO Auto-generated method stub
 		}
 
 		protected class DefaultCustomerViewController implements IDefaultCustomerViewController {
@@ -207,6 +219,35 @@ public class Program extends JPanel {
 			@Override
 			public void logoutAccount() {
 				this.actor = null;
+			}
+
+			@Override
+			public void switchToDetails(Product product) {
+				detailsCustomerView.updateProductView(product);
+				cardLayout.show(MainPanel.this, DETAILSCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+		}
+
+		protected class DetailsCustomerViewController implements IDetailsCustomerViewController {
+
+			@Override
+			public void switchToDefault() {
+				cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 		}
