@@ -151,7 +151,7 @@ public class Customer extends Actor {
     }
     @Override
     public boolean MakeOrder(){
-        HashMap<String,Product> shoppingCart = GetMyCard();
+        HashMap<String,Product> shoppingCart = GetMyCart();
         if(shoppingCart == null){
             System.out.println("Empty shopping cart");
             return false;

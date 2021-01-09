@@ -55,7 +55,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	private JPanel productImagePanel, productNamePanel, productBrandPanel, productPricePanel, productButtonPanel,
 			productStatusPanel;
 
-	private JButton productAddToCartButton, productDetailsButton;
+	private JButton productAddToCartButton, productDetailsButton, productBuyNowButton;
 
 	private JButton leftButton, rightButton, backwardButton, forwardButton;
 	private JFormattedTextField pageTextField;
@@ -489,7 +489,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productStatusPanel.add(productStatusLabel);
 
 				/* *********************************** */
-				productButtonPanel = new JPanel(new GridLayout(2, 1));
+				productButtonPanel = new JPanel(new GridLayout(3, 1));
 				productButtonPanel.setBackground(new Color(100, 100, 100));
 				productButtonPanel.setPreferredSize(new Dimension(_DEFAULT_PRODUCT_FRAME_WIDTH, 100));
 
@@ -497,6 +497,13 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
 
 				productAddToCartButton.addActionListener((ActionEvent event) -> {
+
+				});
+				
+				productBuyNowButton = new JButton("Buy now");
+				productBuyNowButton.setBackground(new Color(100, 100, 100));
+
+				productBuyNowButton.addActionListener((ActionEvent event) -> {
 
 				});
 
@@ -511,6 +518,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				});
 
 				productButtonPanel.add(productAddToCartButton);
+				productButtonPanel.add(productBuyNowButton);
 				productButtonPanel.add(productDetailsButton);
 
 				/* *********************************** */
