@@ -92,12 +92,14 @@ public abstract class Actor {
 	public abstract void Display();
 	// #endregion
 
-	//#region Public virtual methods for customer
-	public void AddToCard(String productId) {
+	// #region Public virtual methods for customer
+	public void AddToCart(String productId) {
 	}
-	public void RemoveItemFromCard(String productId) {
+
+	public void RemoveItemFromCart(String productId) {
 	}
-	public HashMap<String, Product> GetMyCard() {
+
+	public HashMap<String, Product> GetMyCart() {
 		return null;
 	}
 	public boolean MakeOrder(){ return false; }

@@ -17,7 +17,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-
 import Actor.*;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Views.ILoginView;
@@ -25,70 +24,70 @@ import MVCModel.Views.ILoginView;
 public class LoginView extends AbstractView<ILoginViewController> implements ILoginView {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/* ****************************** */
 	// #region Swing Components
-	
+
 	private JLabel title;
-	
+
 	private JLabel usernameLabel;
 	private JLabel passwordLabel;
-	
-	private JTextField username;
-    private JPasswordField password;
 
-    private JButton signinButton;
-    private JButton backButton;
-	
+	private JTextField username;
+	private JPasswordField password;
+
+	private JButton signinButton;
+	private JButton backButton;
+
 	// #endregion
 
 	/* ****************************** */
 	// #region Construct Layout Process
 	public LoginView(ILoginViewController viewController) {
-		super(viewController);      		
+		super(viewController);
 		setLayout(new BorderLayout());
 		setBorder(BorderFactory.createEmptyBorder(150, 120, 150, 120));
-		
+
 		// Main panel at center
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new GridBagLayout());
 		// mainPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-		
+
 		GridBagConstraints constraints = new GridBagConstraints();
-		
+
 		// Default constraints
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.weightx = 1;
 		constraints.weighty = 1;
-		
+
 		// Add title
 		title = new JLabel("SIGNIN", JLabel.CENTER);
-		
+
 		// Constraints
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		
+
 		constraints.gridwidth = 4;
-		
+
 		mainPanel.add(title, constraints);
-		
+
 		// Reset Constraints
 		constraints.gridwidth = 1;
-		
+
 		// Add username label
 		usernameLabel = new JLabel("Username:", JLabel.RIGHT);
-		
+
 		// Constraints
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-				
+
 		mainPanel.add(usernameLabel, constraints);
-		
+
 		// Reset Constraints
-		
+
 		// Add username textfield
 		username = new JTextField(30);
-		
+
 		// Constraints
 		constraints.gridx = 1;
 		constraints.gridy = 1;
@@ -96,90 +95,90 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		constraints.fill = GridBagConstraints.NONE;
 		constraints.gridwidth = 3;
 		constraints.insets = new Insets(1, 3, 1, 3);
-		
+
 		mainPanel.add(username, constraints);
-		
+
 		// Reset Constraints
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridwidth = 1;
 		constraints.insets = new Insets(0, 0, 0, 0);
-		
+
 		// Add password label
 		passwordLabel = new JLabel("Password:", JLabel.RIGHT);
-		
+
 		// Constraints
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-				
+
 		mainPanel.add(passwordLabel, constraints);
-		
+
 		// Reset Constraints
-		
+
 		// Add password textfield
 		password = new JPasswordField(30);
-				
+
 		// Constraints
 		constraints.gridx = 1;
 		constraints.gridy = 2;
-		
+
 		constraints.fill = GridBagConstraints.NONE;
 		constraints.gridwidth = 3;
 		constraints.insets = new Insets(1, 3, 1, 3);
-		
+
 		mainPanel.add(password, constraints);
-		
+
 		// Reset Constraints
 		constraints.fill = GridBagConstraints.BOTH;
 		constraints.gridwidth = 1;
 		constraints.insets = new Insets(0, 0, 0, 0);
-		
+
 		// Add radio buttons -> Actors
 		JPanel radioButtonPanel = new JPanel();
 		radioButtonPanel.setLayout(new GridLayout(0, 3));
-		
+
 		// Shop button
 		JPanel shopPanel = new JPanel();
-		
+
 		JRadioButton shopRadioButton = new JRadioButton();
 		shopRadioButton.setText("Shop");
-				
+
 		shopPanel.add(shopRadioButton);
 
 		// Customer button
 		JPanel customerPanel = new JPanel();
-		
+
 		JRadioButton customerRadioButton = new JRadioButton();
 		customerRadioButton.setText("Customer");
-		
+
 		customerPanel.add(customerRadioButton);
-		
+
 		// Shipper button
 		JPanel shipperPanel = new JPanel();
-		
+
 		JRadioButton shipperRadioButton = new JRadioButton();
 		shipperRadioButton.setText("Shipper");
-		
+
 		shipperPanel.add(shipperRadioButton);
-		
+
 		ButtonGroup actorButtonGroup = new ButtonGroup();
-		
+
 		actorButtonGroup.add(shopRadioButton);
 		actorButtonGroup.add(customerRadioButton);
 		actorButtonGroup.add(shipperRadioButton);
-		
-		actorButtonGroup.setSelected( shopRadioButton.getModel(), true);
-		
-		// Add radio buttons panel to panel	
+
+		actorButtonGroup.setSelected(shopRadioButton.getModel(), true);
+
+		// Add radio buttons panel to panel
 		radioButtonPanel.add(shopPanel);
 		radioButtonPanel.add(customerPanel);
 		radioButtonPanel.add(shipperPanel);
-		
+
 		// Constraints
 		constraints.gridx = 0;
 		constraints.gridy = 3;
-		
+
 		constraints.gridwidth = 4;
-		
+
 		mainPanel.add(radioButtonPanel, constraints);
 
 		// Reset constraints
@@ -188,62 +187,63 @@ public class LoginView extends AbstractView<ILoginViewController> implements ILo
 		// Add buttons
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(0, 2, 10, 0));
-		
+
 		// Add signin button
 		signinButton = new JButton("Signin");
-		
+
 		buttonPanel.add(signinButton);
-		
+
 		// Events
 		signinButton.addActionListener((ActionEvent event) -> {
 			// Pass to another controller to handle -> Receive the result from it
 			Actor actor = null;
-			String username = this.username.getText(), 
-				   password = new String(this.password.getPassword());
-			
+			String username = this.username.getText(), password = new String(this.password.getPassword());
+
 			if (shopRadioButton.isSelected()) {
-				actor = new Shop().SignIn(username, password,getViewController()::signinFailed);
-			}
-			else if (customerRadioButton.isSelected()) {
-				actor = new Customer().SignIn(username, password,getViewController()::signinFailed);
-			}
-			else if (shipperRadioButton.isSelected()) {
-				actor = new Shipper().SignIn(username, password,getViewController()::signinFailed);
+				actor = new Shop().SignIn(username, password, getViewController()::signinFailed);
+			} else if (customerRadioButton.isSelected()) {
+				actor = new Customer().SignIn(username, password, getViewController()::signinFailed);
+			} else if (shipperRadioButton.isSelected()) {
+				actor = new Shipper().SignIn(username, password, getViewController()::signinFailed);
 			}
 
 			if (actor != null) {
-					getViewController().signinSuccessful(actor);
+				getViewController().signinSuccessful(actor);
 			}
 			
+			this.username.setText("");
+			this.password.setText("");
+			actorButtonGroup.setSelected(shopRadioButton.getModel(), true);
+
 		});
-		
+
 		// Add back button
 		backButton = new JButton("Back");
-		
+
 		buttonPanel.add(backButton);
-		
+
 		// Events
 		backButton.addActionListener((ActionEvent event) -> {
 			getViewController().switchToMainMenu();
 		});
-						
+
 		// Constraints
 		constraints.gridx = 0;
 		constraints.gridy = 4;
 
 		constraints.gridwidth = GridBagConstraints.REMAINDER;
 		constraints.insets = new Insets(0, 10, 0, 10);
-		
+
 		mainPanel.add(buttonPanel, constraints);
-		
+
 		// Reset Constraints
 		constraints.gridwidth = 1;
 		constraints.insets = new Insets(0, 0, 0, 0);
-				
+
 		// Add components to current view
-		add(mainPanel, BorderLayout.CENTER);	
+		add(mainPanel, BorderLayout.CENTER);
 	}
-	
+
 	// #endregion
 
 }
