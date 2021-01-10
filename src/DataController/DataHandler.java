@@ -295,6 +295,7 @@ public class DataHandler {
 		}
 		return false;
 	}
+	// For customer and shipper
 	public ArrayList<Order> ViewMyOrder(Function<Connection,ArrayList<Order>> function){
 		Connection conn;
 		try{
@@ -357,6 +358,99 @@ public class DataHandler {
 	}
 	//#endregion
 
+	//#region Public methods for shop
+	public boolean AddNewProduct(Product product){
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return false;
+			conn.setAutoCommit(false);
+			String sql = "insert into `product` (`id`,`name`,`brand`,`price`,`quantity`,`imagePath`,`date`,`description`) values (?,?,?,?,?,?,?,?)";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,product.GetId());
+			stmt.setString(2,product.GetName());
+			stmt.setString(3,product.GetBrand());
+			stmt.setInt(4,product.GetPrice());
+			stmt.setInt(5,product.GetQuantity());
+			stmt.setString(6, product.GetImagePath());
+			stmt.setDate(7,product.GetDate());
+			stmt.setString(8, product.GetDescription());
+			if(stmt.executeUpdate() == 0){
+				System.out.println("Error: " + "insert into product failed");
+				return false;
+			}
+			// Close resource
+			conn.commit();
+			stmt.close();
+			conn.close();
+			return true;
+		}catch (SQLException exc){
+			try {
+				conn.rollback();
+			} catch (SQLException ignored) { }
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return false;
+	}
+	public boolean UpdateProduct(Consumer<Connection> consumer){
+		Connection conn = null;
+		try{
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return false;
+			conn.setAutoCommit(false);
+			consumer.accept(conn);
+		}catch (SQLException exc){
+			try {
+				conn.rollback();
+			}catch (SQLException ignore) { }
+			System.out.println("Error: " + exc.getMessage());
+			return false;
+		}
+		return true;
+	}
+	public ArrayList<Order> ViewAllOrder(){
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			if (conn == null)
+				return null;
+			String sql = "select * from `order`";
+			Statement stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(sql);
+			ArrayList<Order> listOrder = null;
+			if (resultSet.next()) {
+				listOrder = new ArrayList<>();
+				do {
+					String id = resultSet.getString("id");
+					int totalPrice = resultSet.getInt("totalPrice");
+					int status = resultSet.getInt("status");
+					String customerId = resultSet.getString("customerId");
+					String shipperId = resultSet.getString("shipperId");
+					Date date = resultSet.getDate("date");
+					ArrayList<Product> listOrderItem = GetOrderItem(id, conn);
+					Customer customer = GetCustomer(customerId, conn);
+					Shipper shipper = GetShipper(shipperId, conn);
+					if(customer != null){
+						System.out.println(customer.GetName());
+					}
+					if(shipper != null){
+						System.out.println(shipper.GetName());
+					}
+					listOrder.add(new Order(id,date,ORDERSTATUS.SetValue(status),listOrderItem,totalPrice,shipper,customer));
+				} while (resultSet.next());
+			}
+			stmt.close();
+			conn.close();
+			return listOrder;
+		} catch (SQLException exc) {
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return null;
+	}
+	//#endregion
+
 	/* **************************************** */
 	// #region Private Methods
 	public ArrayList<Product> GetOrderItem(String orderId,Connection conn) throws SQLException {
@@ -382,10 +476,13 @@ public class DataHandler {
 		return listOrderItem;
 	}
 	public Customer GetCustomer(String customerId,Connection conn) throws SQLException {
+		if(customerId == null)
+			return null;
 		String sql = "select * from `customer` where id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1,customerId);
 		ResultSet resultSet = stmt.executeQuery();
+
 		Customer customer = null;
 		if(resultSet.next()){
 			customer = new Customer(resultSet.getString("name"),resultSet.getString("phone_number"),resultSet.getString("address"));
@@ -393,6 +490,8 @@ public class DataHandler {
 		return customer;
 	}
 	public Shipper GetShipper(String shipperId,Connection conn) throws SQLException {
+		if (shipperId == null)
+			return null;
 		String sql = "select * from `shipper` where id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1,shipperId);

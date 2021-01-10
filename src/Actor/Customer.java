@@ -19,6 +19,7 @@ public class Customer extends Actor {
 
     public Customer(){};
     public Customer(String name,String phoneNumber,String address){
+
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
@@ -165,9 +166,8 @@ public class Customer extends Actor {
         int totalPrice = 0;
         for (Map.Entry<String,Product> item : shoppingCart.entrySet())
             totalPrice += item.getValue().GetPrice()*item.getValue().GetQuantity();
-        String orderId = Helper.RandomString(12);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+        String orderId = Helper.RandomNumberOnly(12);
+        String date = Helper.GetCurrentDate();
         return DataHandler.GetInstance().MakeOrder(orderId,totalPrice,shoppingCart, account.ID,date);
     }
 
@@ -185,9 +185,8 @@ public class Customer extends Actor {
         HashMap<String,Product> mapProduct = new HashMap<>();
         mapProduct.put(productId, new Product(productId,product.GetName(),product.GetBrand(),
                 product.GetPrice(),0,product.GetImagePath(),product.GetDate(),product.GetDescription()));
-        String orderId = Helper.RandomString(12);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+        String orderId = Helper.RandomNumberOnly(12);
+        String date = Helper.GetCurrentDate();
         int totalPrice = quantity* product.GetPrice();
         return DataHandler.GetInstance().MakeOrder(orderId,totalPrice, mapProduct, account.ID,date);
     }

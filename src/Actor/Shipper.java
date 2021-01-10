@@ -127,7 +127,6 @@ public class Shipper extends Actor{
             }
         });
     }
-
     @Override
     public ArrayList<Order> ViewMyOrder() {
         return DataHandler.GetInstance().ViewMyOrder((conn)->{
