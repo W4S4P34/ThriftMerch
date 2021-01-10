@@ -93,16 +93,16 @@ public abstract class Actor {
 	// #endregion
 
 	// #region Public virtual methods for customer
-	public void AddToCart(String productId) {
+	public void AddToCart(String productId,int quantity, Consumer<String> consumer) {
 	}
 
 	public void RemoveItemFromCart(String productId) {
 	}
-
+	public boolean BuyNow(String productId,int quantity,Consumer<String> consumer){ return false; }
 	public HashMap<String, Product> GetMyCart() {
 		return null;
 	}
-	public boolean MakeOrder(){ return false; }
+	public boolean MakeOrder(Consumer <String> consumer){ return false; }
 	public ArrayList<Order> ViewMyOrder() { return null; }
 	//#endregion
 
@@ -114,12 +114,8 @@ public abstract class Actor {
 	//#endregion
 
 	//#region Public virtual methods for shop
-	public void AddNewProduct(){
-
-	}
-	public void UpdateProduct(){
-
-	}
+	public void AddNewProduct(String name,String brand,int price,int quantity,String description,Consumer<String> consumer){ }
+	public void UpdateProduct(){ }
 	//#endregion
 
 	/* **************************************** */

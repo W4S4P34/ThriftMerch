@@ -118,17 +118,23 @@ public class Customer extends Actor {
         System.out.println("Phone number: " + phoneNumber);
     }
     @Override
-    public void AddToCart(String productId){
-        if(productId.equals(""))
+    public void AddToCart(String productId,int quantity,Consumer<String> consumer){
+        if(productId.equals("")){
+            consumer.accept("ProductID is empty!");
             return;
+        }
         Product product = DataHandler.GetInstance().GetProduct(productId);
         if(product != null){
             if(!myShoppingCart.containsKey(productId)){
                 myShoppingCart.put(productId,new Product(productId,product.GetName(),product.GetBrand(),
                         product.GetPrice(),0,product.GetImagePath(),product.GetDate(),product.GetDescription()));
             }
-            int quantity = myShoppingCart.get(productId).GetQuantity();
-            myShoppingCart.get(productId).SetQuantity(quantity+1);
+            quantity += myShoppingCart.get(productId).GetQuantity();
+            if(quantity > product.GetQuantity()){
+                consumer.accept("Exceed quantity of product!");
+                return;
+            }
+            myShoppingCart.get(productId).SetQuantity(quantity);
         }
     }
 
@@ -150,10 +156,10 @@ public class Customer extends Actor {
         return myShoppingCart;
     }
     @Override
-    public boolean MakeOrder(){
+    public boolean MakeOrder(Consumer <String> consumer){
         HashMap<String,Product> shoppingCart = GetMyCart();
         if(shoppingCart == null){
-            System.out.println("Empty shopping cart");
+            consumer.accept("Shopping cart is empty");
             return false;
         }
         int totalPrice = 0;
@@ -163,6 +169,27 @@ public class Customer extends Actor {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         return DataHandler.GetInstance().MakeOrder(orderId,totalPrice,shoppingCart, account.ID,date);
+    }
+
+    @Override
+    public boolean BuyNow(String productId,int quantity,Consumer<String> consumer){
+        if(productId.isEmpty()){
+            consumer.accept("ProductID is empty");
+            return false;
+        }
+        Product product = DataHandler.GetInstance().GetProduct(productId);
+        if(quantity > product.GetQuantity()){
+            consumer.accept("Exceed quantity of product!");
+            return false;
+        }
+        HashMap<String,Product> mapProduct = new HashMap<>();
+        mapProduct.put(productId, new Product(productId,product.GetName(),product.GetBrand(),
+                product.GetPrice(),0,product.GetImagePath(),product.GetDate(),product.GetDescription()));
+        String orderId = Helper.RandomString(12);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String date = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+        int totalPrice = quantity* product.GetPrice();
+        return DataHandler.GetInstance().MakeOrder(orderId,totalPrice, mapProduct, account.ID,date);
     }
 
     @Override

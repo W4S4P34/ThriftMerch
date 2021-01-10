@@ -362,7 +362,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	@Override
 	public void updateSearchProductView(String products) {
-		productList = DataHandler.GetInstance().SearchProducts(products);
+		productList = DataHandler.GetInstance().SearchProducts(products,100,0);
 		repaintContentPanel(productList);
 	}
 
@@ -373,7 +373,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		if (productList == null) {
 			contentPanel.getParent().validate();
 			contentPanel.getParent().repaint();
-
 			return;
 		}
 

@@ -199,13 +199,13 @@ public class DataHandler {
 		}
 		return null;
 	}
-	public ArrayList<Product> SearchProducts(String request) {
+	public ArrayList<Product> SearchProducts(String request,int limit,int offset) {
 		Connection conn;
 		try {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			if (conn == null)
 				return null;
-			String sql = String.format("select * from product where match(name,brand,description) against ('%s')", request);
+			String sql = String.format("select * from product where match(name,brand,description) against ('%s') limit %s offset %s", request, limit, offset);
 			Statement stmt = conn.createStatement();
 			ResultSet resultSet = stmt.executeQuery(sql);
 			ArrayList<Product> listProduct = null;
@@ -230,6 +230,27 @@ public class DataHandler {
 			System.out.println("Error: " + exc.getMessage());
 		}
 		return null;
+	}
+	public int GetPageNumberSearch(String request,int limit){
+		Connection conn;
+		try {
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			if (conn == null)
+				return 0;
+			String sql = String.format("select count(*) as size from product where match(name,brand,description) against ('%s')", request);
+			Statement stmt = conn.createStatement();
+			ResultSet resultSet = stmt.executeQuery(sql);
+			int size = 0;
+			if (resultSet.next()) {
+				size = resultSet.getInt("size");
+			}
+			stmt.close();
+			conn.close();
+			return (int) Math.ceil((double) size / limit);
+		} catch (SQLException exc) {
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return 0;
 	}
 	public boolean MakeOrder(String orderId, int totalPrice ,HashMap<String,Product> orderItem,String customerId,String date){
 		Connection conn = null;
