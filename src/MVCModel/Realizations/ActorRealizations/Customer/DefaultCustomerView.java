@@ -171,7 +171,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchLabel, 45, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchLabel, 16, SpringLayout.NORTH, utilsPanel);
 
-		searchTextField = new JTextField(45);
+		searchTextField = new JTextField(40);
 
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchTextField, 125, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchTextField, 19, SpringLayout.NORTH, utilsPanel);
@@ -190,7 +190,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			String searchText = searchTextField.getText();
 			if (!searchText.contentEquals("")) {
 
-				updateSearchProductView(searchText);
+				updateSearchProductView(searchText,1);
 
 				if (endSearchButton == null) {
 					endSearchButton = new JButton("Clear");
@@ -202,14 +202,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 							utilsPanel);
 
 					endSearchButton.addActionListener((ActionEvent endEvent) -> {
-						searchTextField.setText("");
-						utilsPanel.remove(endSearchButton);
-						endSearchButton = null;
-
-						updateProductView(1);
-
-						utilsPanel.getParent().validate();
-						utilsPanel.getParent().repaint();
+						resetView();
 					});
 
 					utilsPanel.add(endSearchButton);
@@ -331,6 +324,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		numberFormatter.setOverwriteMode(false);
 
 		pageTextField = new JFormattedTextField(numberFormatter);
+
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 690, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 18, SpringLayout.NORTH, utilsPanel);
 
@@ -342,7 +336,11 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			if (source == pageTextField) {
 				try {
 					pageTextField.commitEdit();
-					updateProductView((Integer) pageTextField.getValue());
+					if(endSearchButton != null){
+						updateSearchProductView(searchTextField.getText(),(Integer) pageTextField.getValue());
+					}else{
+						updateProductView((Integer) pageTextField.getValue());
+					}
 				} catch (ParseException exception) {
 					exception.printStackTrace();
 				}
@@ -382,9 +380,15 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	}
 
 	@Override
-	public void updateSearchProductView(String products) {
-		productList = DataHandler.GetInstance().SearchProducts(products, 100, 0);
+	public void updateSearchProductView(String products,int offset) {
+		System.out.println(offset);
+		productList = DataHandler.GetInstance().SearchProducts(products,_PRODUCT_LIMIT_ON_PAGE,offset);
+		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products,_PRODUCT_LIMIT_ON_PAGE);
+		pageRecordLabel.setText("of " + pageSize);
+		
 		repaintContentPanel(productList);
+		footerPanel.getParent().validate();
+		footerPanel.getParent().repaint();
 	}
 
 	@Override
@@ -570,16 +574,14 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	@Override
 	public void resetView() {
 		updateProductView(1);
-
 		pageTextField.setValue(new Integer(1));
-
+		pageSize = DataHandler.GetInstance().GetPageNumber(_PRODUCT_LIMIT_ON_PAGE);
+		pageRecordLabel.setText("of " + pageSize);
 		searchTextField.setText("");
-
 		if (endSearchButton != null) {
 			utilsPanel.remove(endSearchButton);
 			endSearchButton = null;
 		}
-
 		utilsPanel.getParent().validate();
 		utilsPanel.getParent().repaint();
 	}

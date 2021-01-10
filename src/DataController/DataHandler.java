@@ -205,6 +205,7 @@ public class DataHandler {
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 			if (conn == null)
 				return null;
+			offset = (offset - 1) * limit;
 			String sql = String.format("select * from product where match(name,brand,description) against ('%s') limit %s offset %s", request, limit, offset);
 			Statement stmt = conn.createStatement();
 			ResultSet resultSet = stmt.executeQuery(sql);
