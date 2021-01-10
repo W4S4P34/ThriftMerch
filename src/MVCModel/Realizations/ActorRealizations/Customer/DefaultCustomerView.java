@@ -171,10 +171,11 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchLabel, 45, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchLabel, 16, SpringLayout.NORTH, utilsPanel);
 
-		searchTextField = new JTextField(45);
+		searchTextField = new JTextField(33);
+		searchTextField.setFont(new Font("Verdana", Font.PLAIN, 11));
 
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchTextField, 125, SpringLayout.WEST, utilsPanel);
-		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchTextField, 19, SpringLayout.NORTH, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchTextField, 18, SpringLayout.NORTH, utilsPanel);
 
 		searchTextField.addActionListener((ActionEvent e) -> {
 
@@ -183,7 +184,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		searchButton = new JButton("Search");
 		searchButton.setBackground(new Color(30, 30, 30));
 
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchButton, 495, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, searchButton, 497, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, searchButton, 17, SpringLayout.NORTH, utilsPanel);
 
 		searchButton.addActionListener((ActionEvent e) -> {
@@ -261,7 +262,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image rightImage = ImageIO.read(new File("Resources/Images/right-arrow.png"));
 		Icon rightIcon = new ImageIcon(getScaledImage(rightImage, 12, 12));
 		rightButton = new JButton(rightIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, rightButton, 740, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, rightButton, 735, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, rightButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		rightButton.setPreferredSize(new Dimension(20, 20));
@@ -302,7 +303,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		Image forwardImage = ImageIO.read(new File("Resources/Images/forward.png"));
 		Icon forwardIcon = new ImageIcon(getScaledImage(forwardImage, 12, 12));
 		forwardButton = new JButton(forwardIcon);
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, forwardButton, 765, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, forwardButton, 760, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, forwardButton, 18, SpringLayout.NORTH, utilsPanel);
 
 		forwardButton.setPreferredSize(new Dimension(20, 20));
@@ -331,11 +332,13 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		numberFormatter.setOverwriteMode(false);
 
 		pageTextField = new JFormattedTextField(numberFormatter);
+		pageTextField.setFont(new Font("Verdana", Font.PLAIN, 11));
+
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 690, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 18, SpringLayout.NORTH, utilsPanel);
 
 		pageTextField.setValue(new Integer(1));
-		pageTextField.setColumns(5);
+		pageTextField.setColumns(3);
 
 		pageTextField.addPropertyChangeListener("value", (PropertyChangeEvent e) -> {
 			Object source = e.getSource();
@@ -350,7 +353,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		});
 
 		pageRecordLabel = new JLabel("of " + String.valueOf(pageSize));
-		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageRecordLabel, 790, SpringLayout.WEST, utilsPanel);
+		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageRecordLabel, 785, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageRecordLabel, 18, SpringLayout.NORTH, utilsPanel);
 
 		pageRecordLabel.setFont(new Font("Verdana", Font.BOLD, 15));
