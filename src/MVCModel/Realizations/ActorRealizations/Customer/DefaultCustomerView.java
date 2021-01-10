@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -60,12 +61,15 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	private JButton leftButton, rightButton, backwardButton, forwardButton;
 	private JFormattedTextField pageTextField;
 	private JLabel pageRecordLabel;
+	NumberFormatter numberFormatter;
 
 	private JTextField searchTextField;
 	private JButton searchButton;
 	private JButton endSearchButton;
 
 	private JButton cartButton, logoutButton, listButton;
+
+
 
 	// #endregion
 
@@ -263,7 +267,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		rightButton.addActionListener((ActionEvent e) -> {
 			Integer currentValue = (Integer) pageTextField.getValue() + (Integer) 1;
-
+			System.out.println(currentValue);
 			if (currentValue <= pageSize)
 				pageTextField.setText(currentValue.toString());
 
@@ -316,7 +320,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		pageSize = DataHandler.GetInstance().GetPageNumber(_PRODUCT_LIMIT_ON_PAGE);
 
 		NumberFormat numberFormat = NumberFormat.getInstance();
-		NumberFormatter numberFormatter = new NumberFormatter(numberFormat);
+		numberFormatter = new NumberFormatter(numberFormat);
 
 		numberFormatter.setValueClass(Integer.class);
 		numberFormatter.setMinimum(1);
@@ -326,6 +330,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		pageTextField = new JFormattedTextField(numberFormatter);
 		pageTextField.setFont(new Font("Verdana", Font.PLAIN, 11));
+
 
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 690, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 18, SpringLayout.NORTH, utilsPanel);
@@ -383,11 +388,14 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	@Override
 	public void updateSearchProductView(String products,int offset) {
-		System.out.println(offset);
+		System.out.println("Offset: " + offset);
 		productList = DataHandler.GetInstance().SearchProducts(products,_PRODUCT_LIMIT_ON_PAGE,offset);
 		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products,_PRODUCT_LIMIT_ON_PAGE);
+		numberFormatter.setMinimum(1);
+		numberFormatter.setMaximum(pageSize == 0 ? 1 : pageSize);
 		pageRecordLabel.setText("of " + pageSize);
-		
+		pageTextField.setText(pageSize == 0 ? "0" : String.valueOf(offset));
+
 		repaintContentPanel(productList);
 		footerPanel.getParent().validate();
 		footerPanel.getParent().repaint();
@@ -410,6 +418,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		int availableProductSize = productList.size();
 		int rowNumber = (int) Math.ceil(availableProductSize / (float) _PRODUCT_LIMIT_ON_ROW);
+		HashMap<String,Product> shoppingCard = Program.actor.GetMyCart();
 
 		boolean isRemained = (availableProductSize % _PRODUCT_LIMIT_ON_ROW != 0);
 		int remainder = 0;
@@ -531,16 +540,16 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				productAddToCartButton = new JButton("Add to Cart");
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
-
 				productAddToCartButton.addActionListener((ActionEvent event) -> {
 					getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
 				});
+
 
 				productBuyNowButton = new JButton("Buy now");
 				productBuyNowButton.setBackground(new Color(100, 100, 100));
 
 				productBuyNowButton.addActionListener((ActionEvent event) -> {
-
+					BuyNowEvent(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
 				});
 
 				productDetailsButton = new JButton("Details");
@@ -578,7 +587,10 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		updateProductView(1);
 		pageTextField.setValue(new Integer(1));
 		pageSize = DataHandler.GetInstance().GetPageNumber(_PRODUCT_LIMIT_ON_PAGE);
+		numberFormatter.setMinimum(1);
+		numberFormatter.setMaximum(pageSize);
 		pageRecordLabel.setText("of " + pageSize);
+		pageTextField.setText(String.valueOf(1));
 		searchTextField.setText("");
 		if (endSearchButton != null) {
 			utilsPanel.remove(endSearchButton);
@@ -598,6 +610,15 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		return resizedImg;
 	}
-
+	private void BuyNowEvent(Product product){
+		int input = JOptionPane.showOptionDialog(null,"Buy this item immediately","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+		System.out.println(input);
+		if(input == 0 && Program.actor.BuyNow(product.GetId(),1,this::DisplayError)){
+			JOptionPane.showMessageDialog(null, "Success make order!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	private void DisplayError(String message){
+		JOptionPane.showMessageDialog(null, message, "Something is wrong!", JOptionPane.ERROR_MESSAGE);
+	}
 	// #endregion
 }

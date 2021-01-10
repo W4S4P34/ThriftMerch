@@ -282,6 +282,14 @@ public class DataHandler {
 					System.out.println("Error: " + "insert into orderItem failed");
 					return false;
 				}
+				sql = "update product set quantity = quantity - ? where id = ?";
+				stmt = conn.prepareStatement(sql);
+				stmt.setInt(1,item.getValue().GetQuantity());
+				stmt.setString(2,item.getValue().GetId());
+				if(stmt.executeUpdate() == 0){
+					System.out.println("Error: " + "insert into orderItem failed");
+					return false;
+				}
 			}
 			// Close resource
 			conn.commit();
@@ -449,6 +457,33 @@ public class DataHandler {
 			System.out.println("Error: " + exc.getMessage());
 		}
 		return null;
+	}
+	public boolean RemoveProduct(String productId){
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(DB_URL,USER,PASS);
+			if(conn == null)
+				return false;
+			conn.setAutoCommit(false);
+			String sql = "delete from product where id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1,productId);
+			if(stmt.executeUpdate() == 0){
+				System.out.println("Error: " + "delete product failed");
+				return false;
+			}
+			// Close resource
+			conn.commit();
+			stmt.close();
+			conn.close();
+			return true;
+		}catch (SQLException exc){
+			try {
+				conn.rollback();
+			} catch (SQLException ignored) { }
+			System.out.println("Error: " + exc.getMessage());
+		}
+		return false;
 	}
 	//#endregion
 

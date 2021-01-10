@@ -119,10 +119,10 @@ public class Customer extends Actor {
         System.out.println("Phone number: " + phoneNumber);
     }
     @Override
-    public void AddToCart(String productId,int quantity,Consumer<String> consumer){
+    public boolean AddToCart(String productId,int quantity,Consumer<String> consumer){
         if(productId.equals("")){
             consumer.accept("ProductID is empty!");
-            return;
+            return false;
         }
         Product product = DataHandler.GetInstance().GetProduct(productId);
         if(product != null){
@@ -133,21 +133,37 @@ public class Customer extends Actor {
             quantity += myShoppingCart.get(productId).GetQuantity();
             if(quantity > product.GetQuantity()){
                 consumer.accept("Exceed quantity of product!");
-                return;
+                return false;
             }
             myShoppingCart.get(productId).SetQuantity(quantity);
         }
+        return true;
     }
 
     @Override
-    public void RemoveItemFromCart(String productId) {
+    public boolean RemoveItemFromCart(String productId, Consumer<String> consumer) {
+        if(productId.equals("")){
+            consumer.accept("ProductID is empty!");
+            return false;
+        }
         if(myShoppingCart != null && !myShoppingCart.isEmpty() && myShoppingCart.containsKey(productId)){
             Product product = myShoppingCart.get(productId);
-            product.SetQuantity(product.GetQuantity()-1);
-            if(product.GetQuantity() == 0){
-                myShoppingCart.remove(productId);
+            if(product.GetQuantity() <= 1){
+                consumer.accept("Need at least 1 item in cart");
+                return false;
             }
+            product.SetQuantity(product.GetQuantity()-1);
         }
+        return true;
+    }
+
+    @Override
+    public boolean RemoveAllItemFromCart(String productId){
+        if(myShoppingCart != null && !myShoppingCart.isEmpty() && myShoppingCart.containsKey(productId)){
+            myShoppingCart.remove(productId);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -182,9 +198,13 @@ public class Customer extends Actor {
             consumer.accept("Exceed quantity of product!");
             return false;
         }
+        if(product.GetQuantity() <= 0){
+            consumer.accept("Out of stock!");
+            return false;
+        }
         HashMap<String,Product> mapProduct = new HashMap<>();
         mapProduct.put(productId, new Product(productId,product.GetName(),product.GetBrand(),
-                product.GetPrice(),0,product.GetImagePath(),product.GetDate(),product.GetDescription()));
+                product.GetPrice(),quantity,product.GetImagePath(),product.GetDate(),product.GetDescription()));
         String orderId = Helper.RandomNumberOnly(12);
         String date = Helper.GetCurrentDate();
         int totalPrice = quantity* product.GetPrice();

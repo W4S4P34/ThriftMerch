@@ -172,8 +172,8 @@ public class Program extends JPanel {
 					cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
 					break;
 				case CUSTOMER:
-					defaultCustomerView.resetView();
 					defaultCustomerView.getViewController().setActor(actor);
+					defaultCustomerView.resetView();
 
 					cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
 					break;
