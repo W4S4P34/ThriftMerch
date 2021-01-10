@@ -50,7 +50,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	private JScrollPane productScrollPanel;
 
-	private JPanel titlePanel, footerPanel, utilsPanel;
+	private JPanel titlePanel, footerPanel, utilsPanel, accountTitlePanel, utilsTitlePanel;
 	private JPanel productPanel, contentPanel, productRowPanel, productInfoPanel;
 	private JPanel productImagePanel, productNamePanel, productBrandPanel, productPricePanel, productButtonPanel,
 			productStatusPanel;
@@ -65,7 +65,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	private JButton searchButton;
 	private JButton endSearchButton;
 
-	private JButton cartButton, logoutButton;
+	private JButton cartButton, logoutButton, listButton;
 
 	// #endregion
 
@@ -88,6 +88,9 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		appTitle.setForeground(Color.WHITE);
 		appTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
+		accountTitlePanel = new JPanel(new GridLayout(1, 2));
+		accountTitlePanel.setBackground(new Color(30, 30, 30));
+
 		Image logoutImage = ImageIO.read(new File("Resources/Images/logout.png"));
 		Icon logoutIcon = new ImageIcon(getScaledImage(logoutImage, 32, 32));
 		logoutButton = new JButton(logoutIcon);
@@ -97,19 +100,39 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			getViewController().switchToMainMenu();
 		});
 
+		accountTitlePanel.add(logoutButton);
+
+		utilsTitlePanel = new JPanel(new GridLayout(1, 2));
+		utilsTitlePanel.setBackground(new Color(30, 30, 30));
+
 		Image cartImage = ImageIO.read(new File("Resources/Images/shopping_cart.png"));
 		Icon cartIcon = new ImageIcon(getScaledImage(cartImage, 32, 32));
 		cartButton = new JButton(cartIcon);
 		cartButton.setBackground(new Color(30, 30, 30));
 
-		titlePanel.add(logoutButton, BorderLayout.LINE_START);
+		cartButton.addActionListener((ActionEvent e) -> {
+			getViewController().switchToCart();
+		});
+
+		Image listImage = ImageIO.read(new File("Resources/Images/list.png"));
+		Icon listIcon = new ImageIcon(getScaledImage(listImage, 32, 32));
+		listButton = new JButton(listIcon);
+		listButton.setBackground(new Color(30, 30, 30));
+
+		listButton.addActionListener((ActionEvent e) -> {
+			getViewController().switchToOrders();
+		});
+
+		utilsTitlePanel.add(cartButton);
+		utilsTitlePanel.add(listButton);
+
+		titlePanel.add(accountTitlePanel, BorderLayout.LINE_START);
 		titlePanel.add(appTitle, BorderLayout.CENTER);
-		titlePanel.add(cartButton, BorderLayout.LINE_END);
+		titlePanel.add(utilsTitlePanel, BorderLayout.LINE_END);
 
 		/* *********************** */
 		// Add product panel
-		productPanel = new JPanel(null);
-		// productPanel = new JPanel(new BorderLayout());
+		productPanel = new JPanel(new BorderLayout());
 		productPanel.setBackground(new Color(0, 0, 0, 150));
 
 		contentPanel = new JPanel();
@@ -122,7 +145,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		productScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		productScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		productScrollPanel.getVerticalScrollBar().setUnitIncrement(16);
-		productScrollPanel.setBounds(30, 10, 840, 450);
+		// productScrollPanel.setBounds(30, 10, 840, 450);
 
 		// productPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -130,7 +153,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		/* *********************** */
 		// Add footer with utilities
-		// footerPanel = new JPanel(null);
 		footerPanel = new JPanel(new BorderLayout());
 		footerPanel.setBackground(new Color(30, 30, 30));
 		footerPanel.setPreferredSize(new Dimension(_MODIFIED_SCREEN_WIDTH, 55));
@@ -138,7 +160,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		SpringLayout springUtilsPanelLayout = new SpringLayout();
 		utilsPanel = new JPanel(springUtilsPanelLayout);
 		utilsPanel.setBackground(new Color(30, 30, 30));
-		// utilsPanel.setBounds(30, 5, 840, 45);
 
 		// utilsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -362,7 +383,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	@Override
 	public void updateSearchProductView(String products) {
-		productList = DataHandler.GetInstance().SearchProducts(products,100,0);
+		productList = DataHandler.GetInstance().SearchProducts(products, 100, 0);
 		repaintContentPanel(productList);
 	}
 
@@ -378,7 +399,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		/* ****************************************************** */
 		// Add Content Panel
-		int _DEFAULT_PRODUCT_FRAME_WIDTH = 205;
+		int _DEFAULT_PRODUCT_FRAME_WIDTH = 215;
 		int _DEFAULT_PRODUCT_FRAME_HEIGHT = 450;
 
 		int availableProductSize = productList.size();
@@ -391,35 +412,42 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		}
 
 		for (int i = 0; i < rowNumber; i++) {
-			productRowPanel = new JPanel(null);
-			// productRowPanel.setLayout(new BoxLayout(productRowPanel, BoxLayout.X_AXIS));
+			productRowPanel = new JPanel(new GridLayout(1, _PRODUCT_LIMIT_ON_ROW));
 			productRowPanel.setBackground(Color.BLACK);
-			productRowPanel.setPreferredSize(new Dimension(820, _DEFAULT_PRODUCT_FRAME_HEIGHT));
+
+			Dimension dim = productPanel.getPreferredSize();
+			productRowPanel.setPreferredSize(new Dimension(dim.width, _DEFAULT_PRODUCT_FRAME_HEIGHT));
 
 			productRowPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 			for (int j = 0; j < _PRODUCT_LIMIT_ON_ROW; j++) {
 				if (isRemained & i == (rowNumber - 1) & j > (remainder - 1)) {
-					break;
+					productInfoPanel = new JPanel();
+					productInfoPanel.setBackground(Color.GRAY);
+
+					productInfoPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+
+					productRowPanel.add(productInfoPanel);
+					continue;
 				}
 				productInfoPanel = new JPanel();
 				productInfoPanel.setLayout(new BoxLayout(productInfoPanel, BoxLayout.Y_AXIS));
 				productInfoPanel.setBackground(Color.GRAY);
-				productInfoPanel.setBounds(j * _DEFAULT_PRODUCT_FRAME_WIDTH, 0, _DEFAULT_PRODUCT_FRAME_WIDTH,
-						_DEFAULT_PRODUCT_FRAME_HEIGHT);
 
 				productInfoPanel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 				/* *********************************** */
 				productImagePanel = new JPanel(new BorderLayout());
 				productImagePanel.setBackground(new Color(150, 150, 150));
-				productImagePanel.setPreferredSize(new Dimension(_DEFAULT_PRODUCT_FRAME_WIDTH, 200));
+
+				Dimension frameDim = productInfoPanel.getPreferredSize();
+				productImagePanel.setPreferredSize(new Dimension(frameDim.width, 200));
 
 				productImagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 				ImageIcon imageIcon = new ImageIcon(
 						new ImageIcon(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetImagePath()).getImage()
-								.getScaledInstance(_DEFAULT_PRODUCT_FRAME_WIDTH, 250, Image.SCALE_DEFAULT));
+								.getScaledInstance(_DEFAULT_PRODUCT_FRAME_WIDTH, 220, Image.SCALE_DEFAULT));
 				productImageLabel = new JLabel();
 				productImageLabel.setIcon(imageIcon);
 				productImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -473,13 +501,12 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				int quantity = productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetQuantity();
 				// int quantity = 0;
-				
+
 				if (quantity > 0) {
 					productStatusLabel = new JLabel("In-stock: " + String.valueOf(quantity), SwingConstants.LEFT);
 					productStatusLabel.setFont(new Font("Verdana", Font.BOLD, 16));
 					productStatusLabel.setForeground(Color.WHITE);
-				}
-				else {
+				} else {
 					productStatusLabel = new JLabel("SOLD OUT");
 					productStatusLabel.setFont(new Font("Verdana", Font.BOLD, 16));
 					productStatusLabel.setForeground(Color.RED);
@@ -488,17 +515,21 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productStatusPanel.add(productStatusLabel);
 
 				/* *********************************** */
+				int row = i, col = j;
+
 				productButtonPanel = new JPanel(new GridLayout(3, 1));
 				productButtonPanel.setBackground(new Color(100, 100, 100));
-				productButtonPanel.setPreferredSize(new Dimension(_DEFAULT_PRODUCT_FRAME_WIDTH, 100));
+
+				frameDim = productInfoPanel.getPreferredSize();
+				productButtonPanel.setPreferredSize(new Dimension(frameDim.width, 100));
 
 				productAddToCartButton = new JButton("Add to Cart");
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
 
 				productAddToCartButton.addActionListener((ActionEvent event) -> {
-
+					getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
 				});
-				
+
 				productBuyNowButton = new JButton("Buy now");
 				productBuyNowButton.setBackground(new Color(100, 100, 100));
 
@@ -508,8 +539,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				productDetailsButton = new JButton("Details");
 				productDetailsButton.setBackground(new Color(100, 100, 100));
-
-				int row = i, col = j;
 
 				productDetailsButton.addActionListener((ActionEvent event) -> {
 					getViewController().switchToDetails(DataHandler.GetInstance()
@@ -529,11 +558,9 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productInfoPanel.add(productButtonPanel);
 
 				productRowPanel.add(productInfoPanel);
-				// productRowPanel.add(Box.createRigidArea(new Dimension(1, 0)));
 			}
 
 			contentPanel.add(productRowPanel);
-			// contentPanel.add(Box.createRigidArea(new Dimension(0, 1)));
 		}
 
 		contentPanel.getParent().validate();
