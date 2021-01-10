@@ -23,7 +23,6 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 	// #region Static public field
 
 	public static final int _MODIFIED_SCREEN_WIDTH = 900, _MODIFIED_SCREEN_HEIGHT = 600;
-	public static final int _PRODUCT_LIMIT_ON_PAGE = 12, _PRODUCT_LIMIT_ON_ROW = 4;
 
 	// #endregion
 
@@ -35,17 +34,26 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 	/* ****************************** */
 	// #region Swing Components
 
-	private JPanel titlePanel;
+	private JPanel titlePanel, utilsTitlePanel, accountTitlePanel;
 	private JLabel appTitle;
-	private JButton cartButton, logoutButton;
-	
+	private JButton cartButton, logoutButton, listButton;
+
 	private JPanel productPanel;
 	private JPanel contentPanel;
-	private JScrollPane productScrollPanel;
-	
+
 	private JPanel footerPanel;
 	private JPanel utilsPanel;
 	private JButton backButton;
+
+	private JPanel productImagePanel, informationPanel;
+	private JLabel productImageLabel;
+
+	private JPanel productNamePanel, productBrandPanel, productDatePanel, productPricePanel, productQuantityPanel,
+			productDescriptionPanel, productButtonPanel;
+	private JLabel productNameLabel, productBrandLabel, productDateLabel, productPriceLabel, productQuantityLabel;
+	private JTextArea productDescriptionTextArea;
+	private JButton productAddToCartButton, productBuyNowButton;
+	private JScrollPane productDescriptionScrollPanel;
 
 	// #endregion
 
@@ -67,52 +75,68 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 		appTitle.setForeground(Color.WHITE);
 		appTitle.setHorizontalAlignment(SwingConstants.CENTER);
 
+		accountTitlePanel = new JPanel(new GridLayout(1, 2));
+		accountTitlePanel.setBackground(new Color(30, 30, 30));
+
 		Image logoutImage = ImageIO.read(new File("Resources/Images/logout.png"));
 		Icon logoutIcon = new ImageIcon(getScaledImage(logoutImage, 32, 32));
 		logoutButton = new JButton(logoutIcon);
 		logoutButton.setBackground(new Color(30, 30, 30));
-		
+
 		logoutButton.addActionListener((ActionEvent e) -> {
 			getViewController().switchToMainMenu();
 		});
-		
+
+		accountTitlePanel.add(logoutButton);
+
+		utilsTitlePanel = new JPanel(new GridLayout(1, 2));
+		utilsTitlePanel.setBackground(new Color(30, 30, 30));
+
 		Image cartImage = ImageIO.read(new File("Resources/Images/shopping_cart.png"));
 		Icon cartIcon = new ImageIcon(getScaledImage(cartImage, 32, 32));
 		cartButton = new JButton(cartIcon);
 		cartButton.setBackground(new Color(30, 30, 30));
-		
+
 		cartButton.addActionListener((ActionEvent e) -> {
-			
+			getViewController().switchToCart();
 		});
 
-		titlePanel.add(logoutButton, BorderLayout.LINE_START);
-		titlePanel.add(appTitle, BorderLayout.CENTER);
-		titlePanel.add(cartButton, BorderLayout.LINE_END);
+		Image listImage = ImageIO.read(new File("Resources/Images/list.png"));
+		Icon listIcon = new ImageIcon(getScaledImage(listImage, 32, 32));
+		listButton = new JButton(listIcon);
+		listButton.setBackground(new Color(30, 30, 30));
 
+		listButton.addActionListener((ActionEvent e) -> {
+			getViewController().switchToOrders();
+		});
+
+		utilsTitlePanel.add(cartButton);
+		utilsTitlePanel.add(listButton);
+
+		titlePanel.add(accountTitlePanel, BorderLayout.LINE_START);
+		titlePanel.add(appTitle, BorderLayout.CENTER);
+		titlePanel.add(utilsTitlePanel, BorderLayout.LINE_END);
+
+		/* *********************** */
 		// Add product panel
 		productPanel = new JPanel(new BorderLayout());
 		productPanel.setBackground(new Color(99, 99, 99));
-		
+
 		contentPanel = new JPanel();
-		contentPanel.setBackground(Color.WHITE);
-		
-		productScrollPanel = new JScrollPane(contentPanel);
-		productScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		productScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		productScrollPanel.getVerticalScrollBar().setUnitIncrement(16);
-		
-		productPanel.add(productScrollPanel, BorderLayout.CENTER);
-		
+
+		productPanel.add(contentPanel, BorderLayout.CENTER);
+
+		/* *********************** */
 		// Add footer with utilities
 		footerPanel = new JPanel(new BorderLayout());
 		footerPanel.setBackground(new Color(30, 30, 30));
 		footerPanel.setPreferredSize(new Dimension(_MODIFIED_SCREEN_WIDTH, 55));
-		
+
 		utilsPanel = new JPanel(new FlowLayout());
 		utilsPanel.setBackground(new Color(30, 30, 30));
-		
+
 		// utilsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
+
 		backButton = new JButton("Back");
 		backButton.setBackground(new Color(30, 30, 30));
 		backButton.setPreferredSize(new Dimension(100, 45));
@@ -120,9 +144,9 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 		backButton.addActionListener((ActionEvent event) -> {
 			getViewController().switchToDefault();
 		});
-		
+
 		utilsPanel.add(backButton);
-		
+
 		footerPanel.add(utilsPanel);
 
 		/* *********************************** */
@@ -135,24 +159,133 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 
 	/* ****************************** */
 	// #region Helpers
-	
+
 	@Override
 	public void updateProductView(Product product) {
 		contentPanel.removeAll();
-		contentPanel.setLayout(new BorderLayout());
+		contentPanel.setLayout(new GridLayout(1, 2));
+		contentPanel.setBackground(new Color(99, 99, 99));
+
+		// contentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
 		/* ****************************************************** */
 		// Add content panel
-		
-		JLabel test = new JLabel(product.GetBrand());
-		
+		productImagePanel = new JPanel(new BorderLayout());
+		productImagePanel.setBackground(new Color(99, 99, 99));
+
+		ImageIcon imageIcon = new ImageIcon(new ImageIcon(product.GetImagePath()).getImage().getScaledInstance(
+				(int) DefaultCustomerView._MODIFIED_SCREEN_WIDTH / 2,
+				(int) (DefaultCustomerView._MODIFIED_SCREEN_HEIGHT / 1.4), Image.SCALE_DEFAULT));
+		productImageLabel = new JLabel();
+		productImageLabel.setIcon(imageIcon);
+		productImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		productImageLabel.setVerticalAlignment(SwingConstants.CENTER);
+
+		productImagePanel.add(productImageLabel, BorderLayout.CENTER);
+
 		/* ***************************** */
-		contentPanel.add(test);
-		
+		informationPanel = new JPanel();
+		informationPanel.setLayout(new BoxLayout(informationPanel, BoxLayout.Y_AXIS));
+		informationPanel.setBackground(new Color(99, 99, 99));
+		informationPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+
+		productNamePanel = new JPanel(new BorderLayout());
+		productNamePanel.setBackground(new Color(99, 99, 99));
+
+		productNameLabel = new JLabel("<html><p style='font-size: 150%; color: white; font-family: \"Verdana\";'><b>"
+				+ product.GetName() + "</b></p></html>");
+
+		productPricePanel = new JPanel(new BorderLayout());
+		productPricePanel.setBackground(new Color(99, 99, 99));
+
+		productPriceLabel = new JLabel("<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>"
+				+ "$ " + String.valueOf(product.GetPrice()) + "</b></p></html>", SwingConstants.RIGHT);
+
+		productBrandPanel = new JPanel(new BorderLayout());
+		productBrandPanel.setBackground(new Color(99, 99, 99));
+
+		productBrandLabel = new JLabel("<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>"
+				+ product.GetBrand() + "</b></p></html>");
+
+		productDatePanel = new JPanel(new BorderLayout());
+		productDatePanel.setBackground(new Color(99, 99, 99));
+
+		productDateLabel = new JLabel("<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>"
+				+ String.valueOf(product.GetDate()) + "</b></p></html>");
+
+		productQuantityPanel = new JPanel(new BorderLayout());
+		productQuantityPanel.setBackground(new Color(99, 99, 99));
+
+		productQuantityLabel = new JLabel(
+				"<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>" + "In-stock: "
+						+ String.valueOf(product.GetQuantity()) + "</b></p></html>");
+
+		productDescriptionPanel = new JPanel();
+		productDescriptionPanel.setLayout(new BoxLayout(productDescriptionPanel, BoxLayout.Y_AXIS));
+		productDescriptionPanel.setBackground(new Color(99, 99, 99));
+
+		productDescriptionTextArea = new JTextArea(product.GetDescription(), 0, 0);
+		productDescriptionTextArea.setEditable(false);
+		productDescriptionTextArea.setLineWrap(true);
+		productDescriptionTextArea.setWrapStyleWord(true);
+		productDescriptionTextArea.setFont(new Font("Verdana", Font.BOLD, 16));
+		productDescriptionTextArea.setForeground(Color.WHITE);
+		productDescriptionTextArea.setBackground(new Color(99, 99, 99));
+
+		productDescriptionScrollPanel = new JScrollPane(productDescriptionPanel);
+		productDescriptionScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		productDescriptionScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		productDescriptionScrollPanel.getVerticalScrollBar().setUnitIncrement(16);
+		productDescriptionScrollPanel
+				.setPreferredSize(new Dimension((int) DefaultCustomerView._MODIFIED_SCREEN_WIDTH / 2, 150));
+
+		productButtonPanel = new JPanel(new GridLayout(1, 2));
+		productButtonPanel.setBackground(new Color(99, 99, 99));
+
+		productAddToCartButton = new JButton("Add to Cart");
+		productAddToCartButton.setBackground(new Color(99, 99, 99));
+		productAddToCartButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+
+		productAddToCartButton.addActionListener((ActionEvent event) -> {
+
+		});
+
+		productBuyNowButton = new JButton("Buy now");
+		productBuyNowButton.setBackground(new Color(99, 99, 99));
+		productBuyNowButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+
+		productBuyNowButton.addActionListener((ActionEvent event) -> {
+
+		});
+
+		/* ***************************** */
+		productNamePanel.add(productNameLabel);
+		productPricePanel.add(productPriceLabel);
+		productBrandPanel.add(productBrandLabel);
+		productDatePanel.add(productDateLabel);
+		productQuantityPanel.add(productQuantityLabel);
+		productDescriptionPanel.add(productDescriptionTextArea);
+		productButtonPanel.add(productAddToCartButton);
+		productButtonPanel.add(productBuyNowButton);
+
+		informationPanel.add(productNamePanel);
+		informationPanel.add(productPricePanel);
+		informationPanel.add(productBrandPanel);
+		informationPanel.add(productDatePanel);
+		informationPanel.add(productQuantityPanel);
+		informationPanel.add(productDescriptionScrollPanel);
+		informationPanel.add(productButtonPanel);
+
+		/* ***************************** */
+		contentPanel.add(productImagePanel);
+		contentPanel.add(informationPanel);
+
 		/* ****************************************************** */
 		contentPanel.getParent().validate();
 		contentPanel.getParent().repaint();
 	}
-	
+
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = resizedImg.createGraphics();
@@ -163,6 +296,6 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 
 		return resizedImg;
 	}
-	
+
 	// #endregion
 }
