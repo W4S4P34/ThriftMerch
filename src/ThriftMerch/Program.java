@@ -12,6 +12,8 @@ import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewControll
 import MVCModel.Controllers.ActorControllers.Shipper.IOrderDetailsShipperViewController;
 import MVCModel.Controllers.ActorControllers.Shipper.IOrdersShipperViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IDefaultShopViewController;
+import MVCModel.Controllers.ActorControllers.Shop.IOrderDetailsShopViewController;
+import MVCModel.Controllers.ActorControllers.Shop.IOrdersShopViewController;
 import MVCModel.Realizations.LoginView;
 import MVCModel.Realizations.MainMenuView;
 import MVCModel.Realizations.SignUpView;
@@ -24,6 +26,8 @@ import MVCModel.Realizations.ActorRealizations.Shipper.DefaultShipperView;
 import MVCModel.Realizations.ActorRealizations.Shipper.OrderDetailsShipperView;
 import MVCModel.Realizations.ActorRealizations.Shipper.OrdersShipperView;
 import MVCModel.Realizations.ActorRealizations.Shop.DefaultShopView;
+import MVCModel.Realizations.ActorRealizations.Shop.OrderDetailsShopView;
+import MVCModel.Realizations.ActorRealizations.Shop.OrdersShopView;
 import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
 import MVCModel.Views.ISignUpView;
@@ -36,6 +40,8 @@ import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
 import MVCModel.Views.ActorViews.Shipper.IOrderDetailsShipperView;
 import MVCModel.Views.ActorViews.Shipper.IOrdersShipperView;
 import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
+import MVCModel.Views.ActorViews.Shop.IOrderDetailsShopView;
+import MVCModel.Views.ActorViews.Shop.IOrdersShopView;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -84,6 +90,9 @@ public class Program extends JPanel {
 		protected static final String DEFAULTSHOP_VIEW = "View.shop.default";
 		protected static final String DEFAULTSHIPPER_VIEW = "View.shipper.default";
 
+		protected static final String ORDERSSHOP_VIEW = "View.shop.orders";
+		protected static final String ORDERDETAILSSHOP_VIEW = "View.shop.order.details";
+
 		protected static final String DETAILSCUSTOMER_VIEW = "View.customer.details";
 		protected static final String CARTCUSTOMER_VIEW = "View.customer.cart";
 		protected static final String ORDERSCUSTOMER_VIEW = "View.customer.orders";
@@ -101,6 +110,9 @@ public class Program extends JPanel {
 		private IDefaultShopView defaultShopView;
 		private IDefaultCustomerView defaultCustomerView;
 		private IDefaultShipperView defaultShipperView;
+
+		private IOrdersShopView ordersShopView;
+		private IOrderDetailsShopView orderDetailsShopView;
 
 		private IDetailsCustomerView detailsCustomerView;
 		private ICartCustomerView cartCustomerView;
@@ -125,6 +137,9 @@ public class Program extends JPanel {
 			defaultShopView = new DefaultShopView(new DefaultShopViewController());
 			defaultCustomerView = new DefaultCustomerView(new DefaultCustomerViewController());
 			defaultShipperView = new DefaultShipperView(new DefaultShipperViewController());
+			
+			ordersShopView = new OrdersShopView(new OrdersShopViewController());
+			orderDetailsShopView = new OrderDetailsShopView(new OrderDetailsShopViewController());
 
 			detailsCustomerView = new DetailsCustomerView(new DetailsCustomerViewController());
 			cartCustomerView = new CartCustomerView(new CartCustomerViewController());
@@ -141,6 +156,9 @@ public class Program extends JPanel {
 			add(defaultShopView.getView(), DEFAULTSHOP_VIEW);
 			add(defaultCustomerView.getView(), DEFAULTCUSTOMER_VIEW);
 			add(defaultShipperView.getView(), DEFAULTSHIPPER_VIEW);
+			
+			add(ordersShopView.getView(), ORDERSSHOP_VIEW);
+			add(orderDetailsShopView.getView(), ORDERDETAILSSHOP_VIEW);
 
 			add(detailsCustomerView.getView(), DETAILSCUSTOMER_VIEW);
 			add(cartCustomerView.getView(), CARTCUSTOMER_VIEW);
@@ -259,12 +277,97 @@ public class Program extends JPanel {
 				mainFrame.setLocationRelativeTo(null);
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
+			
+			@Override
+			public void switchToOrders() {
+				ordersShopView.getViewController().setPreviousView(DEFAULTSHOP_VIEW);
+				
+				ordersShopView.updateOrderView();
+				
+				cardLayout.show(MainPanel.this, ORDERSSHOP_VIEW);
+			}
 
 			@Override
 			public void switchToDetails(Product getProduct) {
-
+				
 			}
 
+		}
+
+		protected class OrdersShopViewController implements IOrdersShopViewController {
+
+			private String previousView = "";
+
+			@Override
+			public void setPreviousView(String view) {
+				this.previousView = view;
+			}
+
+			@Override
+			public void switchToPreviousView() {
+				cardLayout.show(MainPanel.this, previousView);
+			}
+
+			@Override
+			public void switchToDefault() {
+				cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToDetails(Order order) {
+				orderDetailsShopView.getViewController().setPreviousView(ORDERSSHOP_VIEW);
+
+				orderDetailsShopView.updateMainOrderDetailsView(order);
+
+				cardLayout.show(MainPanel.this, ORDERDETAILSSHOP_VIEW);
+			}
+
+		}
+		
+		protected class OrderDetailsShopViewController implements IOrderDetailsShopViewController {
+
+			private String previousView = "";
+
+			@Override
+			public void setPreviousView(String view) {
+				this.previousView = view;
+			}
+
+			@Override
+			public void switchToPreviousView() {
+				cardLayout.show(MainPanel.this, previousView);
+			}
+
+			@Override
+			public void switchToDefault() {
+				cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
+				
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToOrders() {
+				ordersShopView.updateOrderView();
+
+				cardLayout.show(MainPanel.this, ORDERSSHOP_VIEW);
+			}
+
+			
 		}
 
 		protected class DefaultCustomerViewController implements IDefaultCustomerViewController {
@@ -292,18 +395,12 @@ public class Program extends JPanel {
 			@Override
 			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
-
-				// cartCustomerView.updateViewCart();
-
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
 
 			@Override
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
-
-				// ordersCustomerView.updateViewOrder();
-
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
 
@@ -627,9 +724,7 @@ public class Program extends JPanel {
 			}
 
 			@Override
-			public void switchToTakenOrder() {
-				ordersShipperView.getViewController().setPreviousView(ORDERDETAILSSHIPPER_VIEW);
-
+			public void switchToTakenOrder() {					
 				ordersShipperView.updateOrderView();
 
 				cardLayout.show(MainPanel.this, ORDERSSHIPPER_VIEW);
@@ -644,7 +739,7 @@ public class Program extends JPanel {
 			@Override
 			public void setPreviousView(String view) {
 				this.previousView = view;
-				//orderDetailsShipperView.updateOrderDetailsView();
+				// orderDetailsShipperView.updateOrderDetailsView();
 			}
 
 			@Override
