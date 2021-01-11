@@ -1,6 +1,7 @@
 package MVCModel.Controllers.ActorControllers.Customer;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import Actor.Actor;
 import DataController.Product;
@@ -12,6 +13,6 @@ public interface IDefaultCustomerViewController extends IViewController {
 	public void switchToMainMenu();
 	public void switchToCart() throws IOException;
 	public void switchToOrders();
-	
-	public void addToCart(Product product) throws IOException;
+	public void addToCart(Product product, Consumer<Boolean> callback) throws IOException;
+	public void BuyNow(Product product, Consumer<Boolean> callback) throws IOException;
 }

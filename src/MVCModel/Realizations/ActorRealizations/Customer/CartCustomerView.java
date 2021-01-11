@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -161,7 +162,16 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 		buyProductButton.setPreferredSize(new Dimension(100, 45));
 
 		buyProductButton.addActionListener((ActionEvent e) -> {
-
+			try {
+				if(getViewController().getTotalPrice() == 0)
+					return;
+				getViewController().MakeOrder((isSuccess) -> {
+					if(isSuccess)
+						getViewController().setTotalPrice(0);
+				});
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
 		});
 
 		utilsPanel.add(backButton);
@@ -196,18 +206,20 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 	@Override
 	public void updateViewCart() throws IOException {
 		contentPanel.removeAll();
-
+		//System.out.println("Update view cart: " + Program.actor.GetMyCart().size());
 		if (Program.actor.GetMyCart() == null) {
 			totalPriceLabel.setText("$0");
 
 			totalPriceLabel.getParent().validate();
 			totalPriceLabel.getParent().repaint();
 
+			contentPanel.getParent().validate();
+			contentPanel.getParent().repaint();
 			return;
 		}
 
 		Dimension productDim = productPanel.getPreferredSize();
-
+		getViewController().setTotalPrice(0);
 		for (Entry<String, Product> item : Program.actor.GetMyCart().entrySet()) {
 
 			productInCartPanel = new JPanel(new BorderLayout());
@@ -276,7 +288,7 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 			Image increaseImage = ImageIO.read(new File("Resources/Images/plus.png"));
 			Icon increaseIcon = new ImageIcon(getScaledImage(increaseImage, 32, 32));
 			increaseButton = new JButton(increaseIcon);
-			increaseButton.setBackground(new Color(30, 30, 30));
+			increaseButton.setBackground(new Color(30, 30, 30, 255));
 
 			JLabel currentPriceLabel = productPriceLabel;
 			JLabel currentQuantityLabel = quantityLabel;
@@ -382,6 +394,19 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 		contentPanel.getParent().repaint();
 	}
 
+	@Override
+	public void ResetView() {
+		contentPanel.removeAll();
+		totalPriceLabel.setText("$0");
+
+		totalPriceLabel.getParent().validate();
+		totalPriceLabel.getParent().repaint();
+
+		contentPanel.getParent().validate();
+		contentPanel.getParent().repaint();
+	}
+
+
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = resizedImg.createGraphics();
@@ -393,5 +418,8 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 		return resizedImg;
 	}
 
+	private void DisplayError(String message){
+		JOptionPane.showMessageDialog(null, message, "Something is wrong!!!", JOptionPane.ERROR_MESSAGE);
+	}
 	// #endregion
 }

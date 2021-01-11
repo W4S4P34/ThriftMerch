@@ -32,16 +32,12 @@ import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import java.lang.ClassNotFoundException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
-import javax.swing.UnsupportedLookAndFeelException;
+import java.util.function.Consumer;
 
 import Actor.Actor;
 import DataController.Product;
@@ -174,6 +170,8 @@ public class Program extends JPanel {
 				case CUSTOMER:
 					defaultCustomerView.getViewController().setActor(actor);
 					defaultCustomerView.resetView();
+					cartCustomerView.ResetView();
+					ordersCustomerView.updateViewOrder();
 
 					cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
 					break;
@@ -225,6 +223,7 @@ public class Program extends JPanel {
 
 			@Override
 			public void switchToDetails(Product product) {
+				detailsCustomerView.getViewController().SetCurrentProductId(product.GetId());
 				detailsCustomerView.updateProductView(product);
 				cardLayout.show(MainPanel.this, DETAILSCUSTOMER_VIEW);
 			}
@@ -241,7 +240,7 @@ public class Program extends JPanel {
 			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
 
-				cartCustomerView.updateViewCart();
+				//cartCustomerView.updateViewCart();
 
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
@@ -250,20 +249,41 @@ public class Program extends JPanel {
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
 
-				ordersCustomerView.updateViewOrder();
+				//ordersCustomerView.updateViewOrder();
 
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
 
 			@Override
-			public void addToCart(Product product) throws IOException {
-				actor.AddToCart(product.GetId(), 1, (String message) -> {
+			public void addToCart(Product product, Consumer<Boolean> callback) throws IOException {
+				boolean isSuccess = actor.AddToCart(product.GetId(), 1, (String message) -> {
 					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
 				});
+				if(isSuccess){
+					cartCustomerView.updateViewCart();
+				}
+				callback.accept(isSuccess);
+			}
+			@Override
+			public void BuyNow(Product product, Consumer<Boolean> callback) throws IOException {
+				int input = JOptionPane.showOptionDialog(null,"Buy this item immediately?","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				boolean isBuySuccess;
+				if(input == 0){
+					isBuySuccess = Program.actor.BuyNow(product.GetId(),1,Program.this::DisplayError);
+					if(isBuySuccess){
+						cartCustomerView.updateViewCart();
+						ordersCustomerView.updateViewOrder();
+						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					}
+
+					callback.accept(isBuySuccess);
+
+				}
 			}
 		}
 
 		protected class DetailsCustomerViewController implements IDetailsCustomerViewController {
+			private String currentProductId;
 
 			@Override
 			public void switchToDefault() {
@@ -281,20 +301,51 @@ public class Program extends JPanel {
 			@Override
 			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DETAILSCUSTOMER_VIEW);
-
-				cartCustomerView.updateViewCart();
-
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
 
 			@Override
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DETAILSCUSTOMER_VIEW);
-
-				ordersCustomerView.updateViewOrder();
-
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
+			@Override
+			public void addToCart(Product product, Consumer<Boolean> callback) throws IOException {
+				boolean isSuccess = actor.AddToCart(product.GetId(), 1, (String message) -> {
+					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
+				});
+				if(isSuccess){
+					defaultCustomerView.UpdateCurrentView();
+					cartCustomerView.updateViewCart();
+				}
+				callback.accept(isSuccess);
+			}
+			@Override
+			public void BuyNow(Product product, Consumer<Boolean> callback) throws IOException {
+				int input = JOptionPane.showOptionDialog(null,"Buy this item immediately?","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				boolean isBuySuccess;
+				if(input == 0){
+					isBuySuccess = Program.actor.BuyNow(product.GetId(),1,Program.this::DisplayError);
+					if(isBuySuccess){
+						cartCustomerView.updateViewCart();
+						defaultCustomerView.UpdateCurrentView();
+						ordersCustomerView.updateViewOrder();
+						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					}
+					callback.accept(isBuySuccess);
+				}
+			}
+
+			@Override
+			public void SetCurrentProductId(String productId) {
+				currentProductId = productId;
+			}
+
+			@Override
+			public String GetCurrentProductId() {
+				return currentProductId;
+			}
+
 
 		}
 
@@ -349,6 +400,25 @@ public class Program extends JPanel {
 			@Override
 			public void setTotalPrice(int price) {
 				totalProductsPrice = price;
+			}
+
+			@Override
+			public void MakeOrder(Consumer<Boolean> callback) throws IOException {
+				int input = JOptionPane.showOptionDialog(null,"Make order!\nTotal price: " + getTotalPrice(),"ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				boolean isBuySuccess;
+				if(input == 0){
+					isBuySuccess = Program.actor.MakeOrder(Program.this::DisplayError);
+					if(isBuySuccess){
+						cartCustomerView.updateViewCart();
+						defaultCustomerView.UpdateCurrentView();
+						ordersCustomerView.updateViewOrder();
+						if(previousView.equals(DETAILSCUSTOMER_VIEW)){
+							detailsCustomerView.updateProductView(detailsCustomerView.getViewController().GetCurrentProductId());
+						}
+						JOptionPane.showMessageDialog(null, "Success make order ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					}
+					callback.accept(isBuySuccess);
+				}
 			}
 
 		}
@@ -433,7 +503,9 @@ public class Program extends JPanel {
 			}
 		});
 	}
-
+	private void DisplayError(String message){
+		JOptionPane.showMessageDialog(null, message, "Something is wrong!", JOptionPane.ERROR_MESSAGE);
+	}
 	// #endregion
 
 }

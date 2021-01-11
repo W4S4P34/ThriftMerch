@@ -7,4 +7,5 @@ import MVCModel.Views.IView;
 
 public interface ICartCustomerView extends IView<ICartCustomerViewController> {
 	public void updateViewCart() throws IOException;
+	public void ResetView();
 }

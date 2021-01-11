@@ -94,7 +94,7 @@ public abstract class Actor {
 
 	// #region Public virtual methods for customer
 	public boolean AddToCart(String productId,int quantity, Consumer<String> consumer) { return false; }
-
+	public boolean IsInCart(String productId){ return false; }
 	public boolean RemoveItemFromCart(String productId, Consumer<String> consumer) { return false; }
 	public boolean BuyNow(String productId,int quantity,Consumer<String> consumer){ return false; }
 	public HashMap<String, Product> GetMyCart() {
