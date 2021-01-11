@@ -234,21 +234,24 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
-
-				cartCustomerView.resetView();
-
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 			@Override
-			public void switchToCart() {
+			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
+
+				cartCustomerView.updateViewCart();
+
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
 
 			@Override
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
+
+				ordersCustomerView.updateViewOrder();
+
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
 
@@ -257,8 +260,6 @@ public class Program extends JPanel {
 				actor.AddToCart(product.GetId(), 1, (String message) -> {
 					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
 				});
-				cartCustomerView.setTotalPrice(cartCustomerView.getTotalPrice() + product.GetPrice());
-				cartCustomerView.addToCart();
 			}
 		}
 
@@ -274,21 +275,24 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
-
-				cartCustomerView.resetView();
-
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 			@Override
-			public void switchToCart() {
+			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DETAILSCUSTOMER_VIEW);
+
+				cartCustomerView.updateViewCart();
+
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
 
 			@Override
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DETAILSCUSTOMER_VIEW);
+
+				ordersCustomerView.updateViewOrder();
+
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
 
@@ -297,6 +301,7 @@ public class Program extends JPanel {
 		protected class CartCustomerViewController implements ICartCustomerViewController {
 
 			private String previousView = "";
+			private int totalProductsPrice = 0;
 
 			@Override
 			public void setPreviousView(String view) {
@@ -316,23 +321,34 @@ public class Program extends JPanel {
 			@Override
 			public void switchToMainMenu() {
 				Program.actor = null;
+				totalProductsPrice = 0;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
-
-				cartCustomerView.resetView();
-
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 			@Override
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(previousView);
+
+				ordersCustomerView.updateViewOrder();
+
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
 
 			@Override
 			public void removeItemFromCart() {
 				defaultCustomerView.updateProductView(defaultCustomerView.getCurrentOffset());
+			}
+
+			@Override
+			public int getTotalPrice() {
+				return totalProductsPrice;
+			}
+
+			@Override
+			public void setTotalPrice(int price) {
+				totalProductsPrice = price;
 			}
 
 		}
@@ -361,15 +377,15 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
-
-				cartCustomerView.resetView();
-
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
 			@Override
-			public void switchToCart() {
+			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(previousView);
+
+				cartCustomerView.updateViewCart();
+
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
 

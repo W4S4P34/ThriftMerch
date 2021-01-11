@@ -98,7 +98,11 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 		cartButton.setBackground(new Color(30, 30, 30));
 
 		cartButton.addActionListener((ActionEvent e) -> {
-			getViewController().switchToCart();
+			try {
+				getViewController().switchToCart();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		});
 
 		Image listImage = ImageIO.read(new File("Resources/Images/list.png"));

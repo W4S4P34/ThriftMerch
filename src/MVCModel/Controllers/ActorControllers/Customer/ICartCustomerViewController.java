@@ -10,4 +10,7 @@ public interface ICartCustomerViewController extends IViewController {
 	public void switchToOrders();
 	
 	public void removeItemFromCart();
+	
+	public int getTotalPrice();
+	public void setTotalPrice(int price);
 }
