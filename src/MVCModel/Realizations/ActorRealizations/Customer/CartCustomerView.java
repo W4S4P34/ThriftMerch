@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -418,8 +417,5 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 		return resizedImg;
 	}
 
-	private void DisplayError(String message){
-		JOptionPane.showMessageDialog(null, message, "Something is wrong!!!", JOptionPane.ERROR_MESSAGE);
-	}
 	// #endregion
 }

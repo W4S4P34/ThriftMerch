@@ -7,7 +7,6 @@ import DataController.Product;
 
 import MVCModel.Controllers.IViewController;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 public interface IDetailsCustomerViewController extends IViewController {
