@@ -9,10 +9,6 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;

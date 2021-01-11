@@ -5,8 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -224,15 +222,15 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 		productQuantityPanel = new JPanel(new BorderLayout());
 		productQuantityPanel.setBackground(new Color(99, 99, 99));
 
-		if(product.GetQuantity() <= 0){
-			productQuantityLabel = new JLabel("<html><p style='font-size: 120%; color: red; font-family: \"Verdana\";'><b>SOLD OUT</b></p></html>");
-		}else{
+		if (product.GetQuantity() <= 0) {
+			productQuantityLabel = new JLabel(
+					"<html><p style='font-size: 120%; color: red; font-family: \"Verdana\";'><b>SOLD OUT</b></p></html>");
+		} else {
 			productQuantityLabel = new JLabel(
 					"<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>" + "In-stock: "
 							+ String.valueOf(product.GetQuantity()) + "</b></p></html>");
 
 		}
-
 
 		productDescriptionPanel = new JPanel();
 		productDescriptionPanel.setLayout(new BoxLayout(productDescriptionPanel, BoxLayout.Y_AXIS));
@@ -260,21 +258,19 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 
 		if (Program.actor.IsInCart(product.GetId())) {
 			productAddToCartButton.setEnabled(false);
-		}
-		else{
+		} else {
 			productAddToCartButton.setBackground(new Color(99, 99, 99));
 			productAddToCartButton.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
 			productAddToCartButton.addActionListener((ActionEvent event) -> {
-				try{
-					getViewController().addToCart(product,(isSuccess)->{
+				try {
+					getViewController().addToCart(product, (isSuccess) -> {
 						productAddToCartButton.setEnabled(!isSuccess);
 					});
-				}catch (Exception e){
+				} catch (Exception e) {
 					System.out.println("Error: " + e);
 				}
 			});
 		}
-
 
 		productBuyNowButton = new JButton("Buy now");
 		productBuyNowButton.setBackground(new Color(99, 99, 99));
@@ -282,15 +278,17 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 
 		productBuyNowButton.addActionListener((ActionEvent event) -> {
 			try {
-				getViewController().BuyNow(product,(isBuySucess)->{
-					if(isBuySucess){
-						product.SetQuantity(product.GetQuantity()-1);
+				getViewController().BuyNow(product, (isBuySucess) -> {
+					if (isBuySucess) {
+						product.SetQuantity(product.GetQuantity() - 1);
 						int quantity = product.GetQuantity();
-						if(quantity <= 0){
-							productQuantityLabel.setText("<html><p style='font-size: 120%; color: red; font-family: \"Verdana\";'><b>SOLD OUT</b></p></html>");
-						}else{
-							productQuantityLabel.setText("<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>" + "In-stock: "
-									+ String.valueOf(quantity) + "</b></p></html>");
+						if (quantity <= 0) {
+							productQuantityLabel.setText(
+									"<html><p style='font-size: 120%; color: red; font-family: \"Verdana\";'><b>SOLD OUT</b></p></html>");
+						} else {
+							productQuantityLabel.setText(
+									"<html><p style='font-size: 120%; color: white; font-family: \"Verdana\";'><b>"
+											+ "In-stock: " + String.valueOf(quantity) + "</b></p></html>");
 						}
 					}
 				});
@@ -330,7 +328,6 @@ public class DetailsCustomerView extends AbstractView<IDetailsCustomerViewContro
 	public void updateProductView(String productId) {
 		updateProductView(DataHandler.GetInstance().GetProduct(productId));
 	}
-
 
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
