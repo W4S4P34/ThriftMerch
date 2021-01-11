@@ -8,6 +8,7 @@ import MVCModel.Controllers.IViewController;
 
 public interface IDefaultCustomerViewController extends IViewController {
 	public void setActor(Actor actor);
+	
 	public void switchToDetails(Product product);
 	public void switchToMainMenu();
 	public void switchToCart() throws IOException;

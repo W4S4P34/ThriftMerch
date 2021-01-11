@@ -6,6 +6,7 @@ import MVCModel.Controllers.ISignUpViewController;
 import MVCModel.Controllers.ActorControllers.Customer.ICartCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Customer.IDefaultCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Customer.IDetailsCustomerViewController;
+import MVCModel.Controllers.ActorControllers.Customer.IOrderDetailsCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Customer.IOrdersCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IDefaultShopViewController;
@@ -15,6 +16,7 @@ import MVCModel.Realizations.SignUpView;
 import MVCModel.Realizations.ActorRealizations.Customer.CartCustomerView;
 import MVCModel.Realizations.ActorRealizations.Customer.DefaultCustomerView;
 import MVCModel.Realizations.ActorRealizations.Customer.DetailsCustomerView;
+import MVCModel.Realizations.ActorRealizations.Customer.OrderDetailsCustomerView;
 import MVCModel.Realizations.ActorRealizations.Customer.OrdersCustomerView;
 import MVCModel.Realizations.ActorRealizations.Shipper.DefaultShipperView;
 import MVCModel.Realizations.ActorRealizations.Shop.DefaultShopView;
@@ -24,6 +26,7 @@ import MVCModel.Views.ISignUpView;
 import MVCModel.Views.ActorViews.Customer.ICartCustomerView;
 import MVCModel.Views.ActorViews.Customer.IDefaultCustomerView;
 import MVCModel.Views.ActorViews.Customer.IDetailsCustomerView;
+import MVCModel.Views.ActorViews.Customer.IOrderDetailsCustomerView;
 import MVCModel.Views.ActorViews.Customer.IOrdersCustomerView;
 import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
 import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
@@ -44,6 +47,7 @@ import java.lang.IllegalAccessException;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import Actor.Actor;
+import DataController.Order;
 import DataController.Product;
 
 public class Program extends JPanel {
@@ -81,6 +85,7 @@ public class Program extends JPanel {
 		protected static final String DETAILSCUSTOMER_VIEW = "View.customer.details";
 		protected static final String CARTCUSTOMER_VIEW = "View.customer.cart";
 		protected static final String ORDERSCUSTOMER_VIEW = "View.customer.orders";
+		protected static final String ORDERDETAILSCUSTOMER_VIEW = "View.customer.order.details";
 
 		// #endregion
 		private CardLayout cardLayout;
@@ -95,6 +100,7 @@ public class Program extends JPanel {
 		private IDetailsCustomerView detailsCustomerView;
 		private ICartCustomerView cartCustomerView;
 		private IOrdersCustomerView ordersCustomerView;
+		private IOrderDetailsCustomerView orderDetailsCustomerView;
 
 		// #endregion
 
@@ -115,6 +121,7 @@ public class Program extends JPanel {
 			detailsCustomerView = new DetailsCustomerView(new DetailsCustomerViewController());
 			cartCustomerView = new CartCustomerView(new CartCustomerViewController());
 			ordersCustomerView = new OrdersCustomerView(new OrdersCustomerViewController());
+			orderDetailsCustomerView = new OrderDetailsCustomerView(new OrderDetailsCustomerViewController());
 
 			add(mainMenuView.getView(), MAINMENU_VIEW);
 			add(loginView.getView(), LOGIN_VIEW);
@@ -127,6 +134,7 @@ public class Program extends JPanel {
 			add(detailsCustomerView.getView(), DETAILSCUSTOMER_VIEW);
 			add(cartCustomerView.getView(), CARTCUSTOMER_VIEW);
 			add(ordersCustomerView.getView(), ORDERSCUSTOMER_VIEW);
+			add(orderDetailsCustomerView.getView(), ORDERDETAILSCUSTOMER_VIEW);
 
 			cardLayout.show(this, MAINMENU_VIEW);
 		}
@@ -383,6 +391,46 @@ public class Program extends JPanel {
 			@Override
 			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(previousView);
+
+				cartCustomerView.updateViewCart();
+
+				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void switchToOrderDetails(Order order) {
+				orderDetailsCustomerView.updateViewOrderDetails(order);
+				
+				cardLayout.show(MainPanel.this, ORDERDETAILSCUSTOMER_VIEW);
+			}
+
+		}
+		
+		protected class OrderDetailsCustomerViewController implements IOrderDetailsCustomerViewController {
+
+			@Override
+			public void switchToOrders() {
+				ordersCustomerView.updateViewOrder();
+
+				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void switchToDefault() {
+				cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToCart() throws IOException {
+				cartCustomerView.getViewController().setPreviousView(ORDERDETAILSCUSTOMER_VIEW);
 
 				cartCustomerView.updateViewCart();
 
