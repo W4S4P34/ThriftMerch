@@ -4,5 +4,5 @@ import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewControll
 import MVCModel.Views.IView;
 
 public interface IDefaultShipperView extends IView<IDefaultShipperViewController> {
-
+	public void updateOrderView();
 }

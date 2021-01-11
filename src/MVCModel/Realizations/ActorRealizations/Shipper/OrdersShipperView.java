@@ -3,6 +3,7 @@ package MVCModel.Realizations.ActorRealizations.Shipper;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -26,12 +27,12 @@ import javax.swing.SwingConstants;
 
 import DataController.ORDERSTATUS;
 import DataController.Order;
-import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewController;
+import MVCModel.Controllers.ActorControllers.Shipper.IOrdersShipperViewController;
 import MVCModel.Realizations.AbstractView;
-import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
+import MVCModel.Views.ActorViews.Shipper.IOrdersShipperView;
 import ThriftMerch.Program;
 
-public class DefaultShipperView extends AbstractView<IDefaultShipperViewController> implements IDefaultShipperView {
+public class OrdersShipperView extends AbstractView<IOrdersShipperViewController> implements IOrdersShipperView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -62,15 +63,19 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 	private JPanel orderPanel, orderInformationPanel, orderIDPanel, orderDatePanel, orderTotalPanel, orderStatusPanel,
 			orderButtonPanel;
 	private JLabel orderIDLabel, orderDateLabel, orderTotalLabel, orderStatusLabel;
-	private JButton orderDetailsButton, orderTakeButton;
+	private JButton orderDetailsButton, orderRemoveButton;
+
+	private JPanel utilsPanel;
+	private JButton backButton, homeButton, orderDoneButton;
 
 	// #endregion
 
 	/* ****************************** */
 	// #region Construct Layout Process
 
-	public DefaultShipperView(IDefaultShipperViewController viewController) throws IOException {
+	public OrdersShipperView(IOrdersShipperViewController viewController) throws IOException {
 		super(viewController);
+
 		setLayout(new BorderLayout());
 
 		/* *********************** */
@@ -108,7 +113,7 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 		listButton.setBackground(new Color(30, 30, 30));
 
 		listButton.addActionListener((ActionEvent e) -> {
-			getViewController().switchToTakenOrder();
+
 		});
 
 		utilsTitlePanel.add(listButton);
@@ -143,6 +148,32 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 		footerPanel.setBackground(new Color(30, 30, 30));
 		footerPanel.setPreferredSize(new Dimension(_MODIFIED_SCREEN_WIDTH, 55));
 
+		utilsPanel = new JPanel(new FlowLayout());
+		utilsPanel.setBackground(new Color(30, 30, 30));
+
+		// utilsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+		backButton = new JButton("Back");
+		backButton.setBackground(new Color(30, 30, 30));
+		backButton.setPreferredSize(new Dimension(100, 45));
+
+		backButton.addActionListener((ActionEvent event) -> {
+			getViewController().switchToPreviousView();
+		});
+
+		homeButton = new JButton("Home");
+		homeButton.setBackground(new Color(30, 30, 30));
+		homeButton.setPreferredSize(new Dimension(100, 45));
+
+		homeButton.addActionListener((ActionEvent event) -> {
+			getViewController().switchToDefault();
+		});
+
+		utilsPanel.add(backButton);
+		utilsPanel.add(homeButton);
+
+		footerPanel.add(utilsPanel);
+
 		/* *********************************** */
 		add(titlePanel, BorderLayout.PAGE_START);
 		add(productPanel, BorderLayout.CENTER);
@@ -157,16 +188,16 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 	public void updateOrderView() {
 		contentPanel.removeAll();
 
-		if (Program.actor.ViewAllOrphanedOrder() == null) {
+		if (Program.actor.ViewMyOrder() == null) {
 			contentPanel.getParent().validate();
 			contentPanel.getParent().repaint();
-			
+
 			return;
 		}
 
 		Dimension productDim = productPanel.getPreferredSize();
 
-		for (Order item : Program.actor.ViewAllOrphanedOrder()) {
+		for (Order item : Program.actor.ViewMyOrder()) {
 
 			orderPanel = new JPanel(new BorderLayout());
 			orderPanel.setBackground(new Color(30, 30, 30));
@@ -246,8 +277,9 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 			orderStatusPanel.add(orderStatusLabel);
 
 			/* *********************************** */
-			orderButtonPanel = new JPanel(new GridLayout(1, 2));
+			orderButtonPanel = new JPanel(new GridLayout(1, 3));
 			orderButtonPanel.setBackground(new Color(30, 30, 30));
+			orderButtonPanel.setPreferredSize(new Dimension(280, Integer.MAX_VALUE));
 
 			/* *********************************** */
 			orderDetailsButton = new JButton("Details");
@@ -258,24 +290,39 @@ public class DefaultShipperView extends AbstractView<IDefaultShipperViewControll
 			});
 
 			/* *********************************** */
-			orderTakeButton = new JButton("Take");
-			orderTakeButton.setBackground(new Color(30, 30, 30));
+			orderButtonPanel.add(orderDetailsButton);
 
-			orderTakeButton.addActionListener((ActionEvent e) -> {
-				Program.actor.UpdateOrder(item.GetID(), ORDERSTATUS.PROCESSED);
-				
-				updateOrderView();
-			});
+			/* *********************************** */
+			if (item.GetOrderStatus() == ORDERSTATUS.PROCESSED) {
+
+				orderRemoveButton = new JButton("Remove");
+				orderRemoveButton.setBackground(new Color(30, 30, 30));
+
+				orderRemoveButton.addActionListener((ActionEvent e) -> {
+
+				});
+
+				/* *********************************** */
+				orderDoneButton = new JButton("Done");
+				orderDoneButton.setBackground(new Color(30, 30, 30));
+
+				orderDoneButton.addActionListener((ActionEvent e) -> {
+					Program.actor.UpdateOrder(item.GetID(), ORDERSTATUS.DELIVERED);
+					
+					updateOrderView();
+				});
+
+				/* *********************************** */
+				orderButtonPanel.add(orderRemoveButton);
+				orderButtonPanel.add(orderDoneButton);
+
+			}
 
 			/* *********************************** */
 			orderInformationPanel.add(orderIDPanel);
 			orderInformationPanel.add(orderDatePanel);
 			orderInformationPanel.add(orderTotalPanel);
 			orderInformationPanel.add(orderStatusPanel);
-
-			/* *********************************** */
-			orderButtonPanel.add(orderDetailsButton);
-			orderButtonPanel.add(orderTakeButton);
 
 			orderPanel.add(orderInformationPanel, BorderLayout.CENTER);
 			orderPanel.add(orderButtonPanel, BorderLayout.LINE_END);
