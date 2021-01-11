@@ -191,10 +191,15 @@ public class Program extends JPanel {
 
 				switch (actor.GetActorType()) {
 				case SHOP:
+					defaultShopView.getViewController().setActor(actor);
+
+					defaultShopView.resetView();
+
 					cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
 					break;
 				case CUSTOMER:
 					defaultCustomerView.getViewController().setActor(actor);
+
 					defaultCustomerView.resetView();
 					cartCustomerView.ResetView();
 					ordersCustomerView.updateViewOrder();
@@ -203,6 +208,7 @@ public class Program extends JPanel {
 					break;
 				case SHIPPER:
 					defaultShipperView.getViewController().setActor(actor);
+
 					defaultShipperView.updateOrderView();
 
 					cardLayout.show(MainPanel.this, DEFAULTSHIPPER_VIEW);
@@ -240,7 +246,25 @@ public class Program extends JPanel {
 		}
 
 		protected class DefaultShopViewController implements IDefaultShopViewController {
-			// TODO Auto-generated method stub
+
+			@Override
+			public void setActor(Actor actor) {
+				Program.actor = actor;
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToDetails(Product getProduct) {
+
+			}
+
 		}
 
 		protected class DefaultCustomerViewController implements IDefaultCustomerViewController {
@@ -627,7 +651,7 @@ public class Program extends JPanel {
 			public void switchToPreviousView() {
 				cardLayout.show(MainPanel.this, previousView);
 			}
-			
+
 			@Override
 			public void switchToDefault() {
 				defaultShipperView.updateOrderView();
