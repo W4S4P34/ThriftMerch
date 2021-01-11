@@ -69,8 +69,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	private JButton cartButton, logoutButton, listButton;
 
-
-
 	// #endregion
 
 	/* ****************************** */
@@ -199,7 +197,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			String searchText = searchTextField.getText();
 			if (!searchText.contentEquals("")) {
 
-				updateSearchProductView(searchText,1);
+				updateSearchProductView(searchText, 1);
 
 				if (endSearchButton == null) {
 					endSearchButton = new JButton("Clear");
@@ -336,7 +334,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		pageTextField = new JFormattedTextField(numberFormatter);
 		pageTextField.setFont(new Font("Verdana", Font.PLAIN, 11));
 
-
 		springUtilsPanelLayout.putConstraint(SpringLayout.WEST, pageTextField, 690, SpringLayout.WEST, utilsPanel);
 		springUtilsPanelLayout.putConstraint(SpringLayout.NORTH, pageTextField, 18, SpringLayout.NORTH, utilsPanel);
 
@@ -348,9 +345,9 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			if (source == pageTextField) {
 				try {
 					pageTextField.commitEdit();
-					if(endSearchButton != null){
-						updateSearchProductView(searchTextField.getText(),(Integer) pageTextField.getValue());
-					}else{
+					if (endSearchButton != null) {
+						updateSearchProductView(searchTextField.getText(), (Integer) pageTextField.getValue());
+					} else {
 						updateProductView((Integer) pageTextField.getValue());
 					}
 				} catch (ParseException exception) {
@@ -394,12 +391,13 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	}
 
 	@Override
-	public void updateSearchProductView(String products,int offset) {
+	public void updateSearchProductView(String products, int offset) {
 		this.offset = offset;
 		System.out.println("Offset: " + offset);
 
-		productList = DataHandler.GetInstance().SearchProducts(products,_PRODUCT_LIMIT_ON_PAGE,offset == 0 ? 1 : offset);
-		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products,_PRODUCT_LIMIT_ON_PAGE);
+		productList = DataHandler.GetInstance().SearchProducts(products, _PRODUCT_LIMIT_ON_PAGE,
+				offset == 0 ? 1 : offset);
+		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products, _PRODUCT_LIMIT_ON_PAGE);
 
 		numberFormatter.setMinimum(pageSize == 0 ? 0 : 1);
 		numberFormatter.setMaximum(pageSize);
@@ -434,8 +432,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		if (isRemained) {
 			remainder = availableProductSize % _PRODUCT_LIMIT_ON_ROW;
 		}
-
-
 
 		for (int i = 0; i < rowNumber; i++) {
 			productRowPanel = new JPanel(new GridLayout(1, _PRODUCT_LIMIT_ON_ROW));
@@ -554,15 +550,15 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				if (Program.actor.IsInCart(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetId())) {
 					productAddToCartButton.setEnabled(false);
-				}
-				else {
+				} else {
 					/* Put here for fun, don't mind */
 					JButton currentButton = productAddToCartButton;
 					productAddToCartButton.addActionListener((ActionEvent event) -> {
 						try {
-							getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col),(isSuccess)->{
-								currentButton.setEnabled(!isSuccess);
-							});
+							getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col),
+									(isSuccess) -> {
+										currentButton.setEnabled(!isSuccess);
+									});
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -574,17 +570,17 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				JLabel productStatus = productStatusLabel;
 				productBuyNowButton.addActionListener((ActionEvent event) -> {
-					//BuyNowEvent();
+					// BuyNowEvent();
 					try {
-						getViewController().BuyNow(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col),(isSuccess)->{
+						getViewController().BuyNow(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col), (isSuccess) -> {
 							int quantity1 = productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetQuantity() - 1;
-							if(isSuccess){
+							if (isSuccess) {
 								productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).SetQuantity(quantity1);
 							}
-							if(quantity1 <= 0){
+							if (quantity1 <= 0) {
 								productStatus.setText("SOLD OUT");
 								productStatus.setForeground(Color.RED);
-							}else{
+							} else {
 								productStatus.setText("In-stock: " + quantity1);
 							}
 						});
@@ -625,10 +621,9 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 	@Override
 	public void UpdateCurrentView() {
-		if(endSearchButton != null){
-			updateSearchProductView(searchTextField.getText(),getCurrentOffset());
-		}
-		else {
+		if (endSearchButton != null) {
+			updateSearchProductView(searchTextField.getText(), getCurrentOffset());
+		} else {
 			updateProductView(getCurrentOffset());
 		}
 	}
@@ -655,7 +650,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	public int getCurrentOffset() {
 		return this.offset;
 	}
-
 
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
