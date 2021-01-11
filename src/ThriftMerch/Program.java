@@ -9,6 +9,8 @@ import MVCModel.Controllers.ActorControllers.Customer.IDetailsCustomerViewContro
 import MVCModel.Controllers.ActorControllers.Customer.IOrderDetailsCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Customer.IOrdersCustomerViewController;
 import MVCModel.Controllers.ActorControllers.Shipper.IDefaultShipperViewController;
+import MVCModel.Controllers.ActorControllers.Shipper.IOrderDetailsShipperViewController;
+import MVCModel.Controllers.ActorControllers.Shipper.IOrdersShipperViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IDefaultShopViewController;
 import MVCModel.Realizations.LoginView;
 import MVCModel.Realizations.MainMenuView;
@@ -19,6 +21,8 @@ import MVCModel.Realizations.ActorRealizations.Customer.DetailsCustomerView;
 import MVCModel.Realizations.ActorRealizations.Customer.OrderDetailsCustomerView;
 import MVCModel.Realizations.ActorRealizations.Customer.OrdersCustomerView;
 import MVCModel.Realizations.ActorRealizations.Shipper.DefaultShipperView;
+import MVCModel.Realizations.ActorRealizations.Shipper.OrderDetailsShipperView;
+import MVCModel.Realizations.ActorRealizations.Shipper.OrdersShipperView;
 import MVCModel.Realizations.ActorRealizations.Shop.DefaultShopView;
 import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
@@ -29,6 +33,8 @@ import MVCModel.Views.ActorViews.Customer.IDetailsCustomerView;
 import MVCModel.Views.ActorViews.Customer.IOrderDetailsCustomerView;
 import MVCModel.Views.ActorViews.Customer.IOrdersCustomerView;
 import MVCModel.Views.ActorViews.Shipper.IDefaultShipperView;
+import MVCModel.Views.ActorViews.Shipper.IOrderDetailsShipperView;
+import MVCModel.Views.ActorViews.Shipper.IOrdersShipperView;
 import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
 
 import java.awt.CardLayout;
@@ -83,6 +89,9 @@ public class Program extends JPanel {
 		protected static final String ORDERSCUSTOMER_VIEW = "View.customer.orders";
 		protected static final String ORDERDETAILSCUSTOMER_VIEW = "View.customer.order.details";
 
+		protected static final String ORDERDETAILSSHIPPER_VIEW = "View.shipper.order.details";
+		protected static final String ORDERSSHIPPER_VIEW = "View.shipper.orders";
+
 		// #endregion
 		private CardLayout cardLayout;
 		private IMainMenuView mainMenuView;
@@ -97,6 +106,9 @@ public class Program extends JPanel {
 		private ICartCustomerView cartCustomerView;
 		private IOrdersCustomerView ordersCustomerView;
 		private IOrderDetailsCustomerView orderDetailsCustomerView;
+
+		private IOrderDetailsShipperView orderDetailsShipperView;
+		private IOrdersShipperView ordersShipperView;
 
 		// #endregion
 
@@ -119,6 +131,9 @@ public class Program extends JPanel {
 			ordersCustomerView = new OrdersCustomerView(new OrdersCustomerViewController());
 			orderDetailsCustomerView = new OrderDetailsCustomerView(new OrderDetailsCustomerViewController());
 
+			orderDetailsShipperView = new OrderDetailsShipperView(new OrderDetailsShipperViewController());
+			ordersShipperView = new OrdersShipperView(new OrdersShipperViewController());
+
 			add(mainMenuView.getView(), MAINMENU_VIEW);
 			add(loginView.getView(), LOGIN_VIEW);
 			add(signUpView.getView(), SIGNUP_VIEW);
@@ -131,6 +146,9 @@ public class Program extends JPanel {
 			add(cartCustomerView.getView(), CARTCUSTOMER_VIEW);
 			add(ordersCustomerView.getView(), ORDERSCUSTOMER_VIEW);
 			add(orderDetailsCustomerView.getView(), ORDERDETAILSCUSTOMER_VIEW);
+
+			add(orderDetailsShipperView.getView(), ORDERDETAILSSHIPPER_VIEW);
+			add(ordersShipperView.getView(), ORDERSSHIPPER_VIEW);
 
 			cardLayout.show(this, MAINMENU_VIEW);
 		}
@@ -184,6 +202,9 @@ public class Program extends JPanel {
 					cardLayout.show(MainPanel.this, DEFAULTCUSTOMER_VIEW);
 					break;
 				case SHIPPER:
+					defaultShipperView.getViewController().setActor(actor);
+					defaultShipperView.updateOrderView();
+
 					cardLayout.show(MainPanel.this, DEFAULTSHIPPER_VIEW);
 					break;
 				default:
@@ -248,7 +269,7 @@ public class Program extends JPanel {
 			public void switchToCart() throws IOException {
 				cartCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
 
-				//cartCustomerView.updateViewCart();
+				// cartCustomerView.updateViewCart();
 
 				cardLayout.show(MainPanel.this, CARTCUSTOMER_VIEW);
 			}
@@ -257,7 +278,7 @@ public class Program extends JPanel {
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(DEFAULTCUSTOMER_VIEW);
 
-				//ordersCustomerView.updateViewOrder();
+				// ordersCustomerView.updateViewOrder();
 
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
@@ -267,21 +288,24 @@ public class Program extends JPanel {
 				boolean isSuccess = actor.AddToCart(product.GetId(), 1, (String message) -> {
 					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
 				});
-				if(isSuccess){
+				if (isSuccess) {
 					cartCustomerView.updateViewCart();
 				}
 				callback.accept(isSuccess);
 			}
+
 			@Override
 			public void BuyNow(Product product, Consumer<Boolean> callback) throws IOException {
-				int input = JOptionPane.showOptionDialog(null,"Buy this item immediately?","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				int input = JOptionPane.showOptionDialog(null, "Buy this item immediately?", "ARE YOU SURE?",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				boolean isBuySuccess;
-				if(input == 0){
-					isBuySuccess = Program.actor.BuyNow(product.GetId(),1,Program.this::DisplayError);
-					if(isBuySuccess){
+				if (input == 0) {
+					isBuySuccess = Program.actor.BuyNow(product.GetId(), 1, Program.this::DisplayError);
+					if (isBuySuccess) {
 						cartCustomerView.updateViewCart();
 						ordersCustomerView.updateViewOrder();
-						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
 
 					callback.accept(isBuySuccess);
@@ -317,28 +341,32 @@ public class Program extends JPanel {
 				ordersCustomerView.getViewController().setPreviousView(DETAILSCUSTOMER_VIEW);
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
 			}
+
 			@Override
 			public void addToCart(Product product, Consumer<Boolean> callback) throws IOException {
 				boolean isSuccess = actor.AddToCart(product.GetId(), 1, (String message) -> {
 					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
 				});
-				if(isSuccess){
+				if (isSuccess) {
 					defaultCustomerView.UpdateCurrentView();
 					cartCustomerView.updateViewCart();
 				}
 				callback.accept(isSuccess);
 			}
+
 			@Override
 			public void BuyNow(Product product, Consumer<Boolean> callback) throws IOException {
-				int input = JOptionPane.showOptionDialog(null,"Buy this item immediately?","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				int input = JOptionPane.showOptionDialog(null, "Buy this item immediately?", "ARE YOU SURE?",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				boolean isBuySuccess;
-				if(input == 0){
-					isBuySuccess = Program.actor.BuyNow(product.GetId(),1,Program.this::DisplayError);
-					if(isBuySuccess){
+				if (input == 0) {
+					isBuySuccess = Program.actor.BuyNow(product.GetId(), 1, Program.this::DisplayError);
+					if (isBuySuccess) {
 						cartCustomerView.updateViewCart();
 						defaultCustomerView.UpdateCurrentView();
 						ordersCustomerView.updateViewOrder();
-						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Buy successfully ^.^!", "Success!",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
 					callback.accept(isBuySuccess);
 				}
@@ -353,7 +381,6 @@ public class Program extends JPanel {
 			public String GetCurrentProductId() {
 				return currentProductId;
 			}
-
 
 		}
 
@@ -412,18 +439,21 @@ public class Program extends JPanel {
 
 			@Override
 			public void MakeOrder(Consumer<Boolean> callback) throws IOException {
-				int input = JOptionPane.showOptionDialog(null,"Make order!\nTotal price: " + getTotalPrice(),"ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
+				int input = JOptionPane.showOptionDialog(null, "Make order!\nTotal price: " + getTotalPrice(),
+						"ARE YOU SURE?", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 				boolean isBuySuccess;
-				if(input == 0){
+				if (input == 0) {
 					isBuySuccess = Program.actor.MakeOrder(Program.this::DisplayError);
-					if(isBuySuccess){
+					if (isBuySuccess) {
 						cartCustomerView.updateViewCart();
 						defaultCustomerView.UpdateCurrentView();
 						ordersCustomerView.updateViewOrder();
-						if(previousView.equals(DETAILSCUSTOMER_VIEW)){
-							detailsCustomerView.updateProductView(detailsCustomerView.getViewController().GetCurrentProductId());
+						if (previousView.equals(DETAILSCUSTOMER_VIEW)) {
+							detailsCustomerView
+									.updateProductView(detailsCustomerView.getViewController().GetCurrentProductId());
 						}
-						JOptionPane.showMessageDialog(null, "Success make order ^.^!", "Success!", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Success make order ^.^!", "Success!",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
 					callback.accept(isBuySuccess);
 				}
@@ -470,12 +500,12 @@ public class Program extends JPanel {
 			@Override
 			public void switchToOrderDetails(Order order) {
 				orderDetailsCustomerView.updateViewOrderDetails(order);
-				
+
 				cardLayout.show(MainPanel.this, ORDERDETAILSCUSTOMER_VIEW);
 			}
 
 		}
-		
+
 		protected class OrderDetailsCustomerViewController implements IOrderDetailsCustomerViewController {
 
 			@Override
@@ -510,6 +540,115 @@ public class Program extends JPanel {
 		}
 
 		protected class DefaultShipperViewController implements IDefaultShipperViewController {
+
+			@Override
+			public void setActor(Actor actor) {
+				Program.actor = actor;
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToDetails(Order order) {
+				orderDetailsShipperView.getViewController().setPreviousView(DEFAULTSHIPPER_VIEW);
+
+				orderDetailsShipperView.updateOrderDetailsView(order);
+
+				cardLayout.show(MainPanel.this, ORDERDETAILSSHIPPER_VIEW);
+			}
+
+			@Override
+			public void switchToTakenOrder() {
+				ordersShipperView.getViewController().setPreviousView(DEFAULTSHIPPER_VIEW);
+
+				ordersShipperView.updateOrderView();
+
+				cardLayout.show(MainPanel.this, ORDERSSHIPPER_VIEW);
+			}
+
+		}
+
+		protected class OrderDetailsShipperViewController implements IOrderDetailsShipperViewController {
+
+			private String previousView = "";
+
+			@Override
+			public void setPreviousView(String view) {
+				this.previousView = view;
+			}
+
+			@Override
+			public void switchToPreviousView() {
+				cardLayout.show(MainPanel.this, previousView);
+			}
+
+			@Override
+			public void switchToDefault() {
+				defaultShipperView.updateOrderView();
+				cardLayout.show(MainPanel.this, DEFAULTSHIPPER_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToTakenOrder() {
+				ordersShipperView.getViewController().setPreviousView(ORDERDETAILSSHIPPER_VIEW);
+
+				ordersShipperView.updateOrderView();
+
+				cardLayout.show(MainPanel.this, ORDERSSHIPPER_VIEW);
+			}
+
+		}
+
+		protected class OrdersShipperViewController implements IOrdersShipperViewController {
+
+			private String previousView = "";
+
+			@Override
+			public void setPreviousView(String view) {
+				this.previousView = view;
+			}
+
+			@Override
+			public void switchToPreviousView() {
+				cardLayout.show(MainPanel.this, previousView);
+			}
+			
+			@Override
+			public void switchToDefault() {
+				defaultShipperView.updateOrderView();
+				cardLayout.show(MainPanel.this, DEFAULTSHIPPER_VIEW);
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToDetails(Order order) {
+				orderDetailsShipperView.getViewController().setPreviousView(ORDERSSHIPPER_VIEW);
+
+				orderDetailsShipperView.updateTakenOrderDetailsView(order);
+
+				cardLayout.show(MainPanel.this, ORDERDETAILSSHIPPER_VIEW);
+			}
 
 		}
 
@@ -551,7 +690,8 @@ public class Program extends JPanel {
 			}
 		});
 	}
-	private void DisplayError(String message){
+
+	private void DisplayError(String message) {
 		JOptionPane.showMessageDialog(null, message, "Something is wrong!", JOptionPane.ERROR_MESSAGE);
 	}
 	// #endregion

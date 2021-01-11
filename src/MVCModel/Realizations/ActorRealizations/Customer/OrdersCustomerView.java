@@ -181,6 +181,9 @@ public class OrdersCustomerView extends AbstractView<IOrdersCustomerViewControll
 		contentPanel.removeAll();
 
 		if (Program.actor.ViewMyOrder() == null) {
+			contentPanel.getParent().validate();
+			contentPanel.getParent().repaint();
+			
 			return;
 		}
 
