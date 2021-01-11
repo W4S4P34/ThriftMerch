@@ -4,5 +4,5 @@ import MVCModel.Controllers.ActorControllers.Customer.IOrdersCustomerViewControl
 import MVCModel.Views.IView;
 
 public interface IOrdersCustomerView extends IView<IOrdersCustomerViewController> {
-
+	public void updateViewOrder();
 }

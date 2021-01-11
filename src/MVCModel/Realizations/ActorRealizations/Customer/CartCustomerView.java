@@ -29,8 +29,6 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 	/* ****************************** */
 	// #region Private field
 
-	private int totalProductsPrice = 0;
-
 	// #endregion
 
 	/* ****************************** */
@@ -196,10 +194,15 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 	// #region Helpers
 
 	@Override
-	public void addToCart() throws IOException {
+	public void updateViewCart() throws IOException {
 		contentPanel.removeAll();
 
 		if (Program.actor.GetMyCart() == null) {
+			totalPriceLabel.setText("$0");
+
+			totalPriceLabel.getParent().validate();
+			totalPriceLabel.getParent().repaint();
+
 			return;
 		}
 
@@ -286,9 +289,9 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 					currentPriceLabel
 							.setText("$" + String.valueOf(item.getValue().GetPrice() * item.getValue().GetQuantity()));
 
-					totalProductsPrice += item.getValue().GetPrice();
+					getViewController().setTotalPrice(getViewController().getTotalPrice() + item.getValue().GetPrice());
 
-					totalPriceLabel.setText("$" + totalProductsPrice);
+					totalPriceLabel.setText("$" + getViewController().getTotalPrice());
 
 					contentPanel.getParent().validate();
 					contentPanel.getParent().repaint();
@@ -313,9 +316,9 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 					currentPriceLabel
 							.setText("$" + String.valueOf(item.getValue().GetPrice() * item.getValue().GetQuantity()));
 
-					totalProductsPrice -= item.getValue().GetPrice();
+					getViewController().setTotalPrice(getViewController().getTotalPrice() - item.getValue().GetPrice());
 
-					totalPriceLabel.setText("$" + totalProductsPrice);
+					totalPriceLabel.setText("$" + getViewController().getTotalPrice());
 
 					contentPanel.getParent().validate();
 					contentPanel.getParent().repaint();
@@ -336,14 +339,21 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 			JPanel currentProductInCartPanel = productInCartPanel;
 
 			productRemoveButton.addActionListener((ActionEvent e) -> {
-				totalProductsPrice -= item.getValue().GetPrice() * item.getValue().GetQuantity();
+				getViewController().setTotalPrice(getViewController().getTotalPrice()
+						- item.getValue().GetPrice() * item.getValue().GetQuantity());
 
 				Program.actor.RemoveAllItemFromCart(item.getValue().GetId());
 				getViewController().removeItemFromCart();
 
-				totalPriceLabel.setText("$" + totalProductsPrice);
+				totalPriceLabel.setText("$" + getViewController().getTotalPrice());
 
-				removeFromCart(currentProductInCartPanel);
+				contentPanel.remove(currentProductInCartPanel);
+
+				contentPanel.getParent().validate();
+				contentPanel.getParent().repaint();
+
+				totalPriceLabel.getParent().validate();
+				totalPriceLabel.getParent().repaint();
 			});
 
 			/* ******************* */
@@ -357,43 +367,19 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 			productInCartPanel.add(productButtonPanel, BorderLayout.LINE_END);
 
 			contentPanel.add(productInCartPanel);
+
+			/* *********************************** */
+			getViewController().setTotalPrice(
+					getViewController().getTotalPrice() + item.getValue().GetPrice() * item.getValue().GetQuantity());
 		}
-		contentPanel.getParent().validate();
-		contentPanel.getParent().repaint();
-	}
 
-	@Override
-	public void removeFromCart(Component component) {
-		contentPanel.remove(component);
-
-		contentPanel.getParent().validate();
-		contentPanel.getParent().repaint();
+		totalPriceLabel.setText("$" + String.valueOf(getViewController().getTotalPrice()));
 
 		totalPriceLabel.getParent().validate();
 		totalPriceLabel.getParent().repaint();
-	}
-
-	@Override
-	public void resetView() {
-		contentPanel.removeAll();
 
 		contentPanel.getParent().validate();
 		contentPanel.getParent().repaint();
-	}
-
-	@Override
-	public int getTotalPrice() {
-		return this.totalProductsPrice;
-	}
-
-	@Override
-	public void setTotalPrice(int total) {
-		this.totalProductsPrice = total;
-
-		totalPriceLabel.setText("$" + totalProductsPrice);
-
-		totalPriceLabel.getParent().validate();
-		totalPriceLabel.getParent().repaint();
 	}
 
 	private Image getScaledImage(Image srcImg, int w, int h) {
