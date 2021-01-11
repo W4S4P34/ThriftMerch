@@ -141,7 +141,7 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 		listButton.setBackground(new Color(30, 30, 30));
 
 		listButton.addActionListener((ActionEvent e) -> {
-
+			getViewController().switchToOrders();
 		});
 
 		utilsTitlePanel.add(addProductButton);
