@@ -10,6 +10,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -294,7 +296,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		backwardButton.setBackground(new Color(30, 30, 30));
 
 		backwardButton.addActionListener((ActionEvent e) -> {
-			pageTextField.setText(String.valueOf(1));
+			pageTextField.setText(pageSize == 0 ? String.valueOf(0) : String.valueOf(1));
 
 			try {
 				pageTextField.commitEdit();
@@ -399,10 +401,11 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		System.out.println("Offset: " + offset);
 		productList = DataHandler.GetInstance().SearchProducts(products,_PRODUCT_LIMIT_ON_PAGE,offset);
 		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products,_PRODUCT_LIMIT_ON_PAGE);
-		numberFormatter.setMinimum(1);
-		numberFormatter.setMaximum(pageSize == 0 ? 1 : pageSize);
+
+		numberFormatter.setMinimum(pageSize == 0 ? 0 : 1);
+		numberFormatter.setMaximum(pageSize);
 		pageRecordLabel.setText("of " + pageSize);
-		pageTextField.setText(pageSize == 0 ? "0" : String.valueOf(offset));
+		pageTextField.setText(pageSize == 0 ? String.valueOf(0) : String.valueOf(offset));
 
 		repaintContentPanel(productList);
 		footerPanel.getParent().validate();
@@ -433,7 +436,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 			remainder = availableProductSize % _PRODUCT_LIMIT_ON_ROW;
 		}
 
-		HashMap<String, Product> cart = Program.actor.GetMyCart();
+
 
 		for (int i = 0; i < rowNumber; i++) {
 			productRowPanel = new JPanel(new GridLayout(1, _PRODUCT_LIMIT_ON_ROW));
@@ -550,29 +553,45 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 				productAddToCartButton = new JButton("Add to Cart");
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
 
-				if (cart != null && cart.containsKey(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetId())) {
+				if (Program.actor.IsInCart(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetId())) {
 					productAddToCartButton.setEnabled(false);
 				}
-
-				/* Put here for fun, don't mind */
-				JButton currentButton = productAddToCartButton;
-
-				productAddToCartButton.addActionListener((ActionEvent event) -> {
-					try {
-						getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-					currentButton.setEnabled(false);
-				});
-
+				else {
+					/* Put here for fun, don't mind */
+					JButton currentButton = productAddToCartButton;
+					productAddToCartButton.addActionListener((ActionEvent event) -> {
+						try {
+							getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col),(isSuccess)->{
+								currentButton.setEnabled(!isSuccess);
+							});
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					});
+				}
 
 				productBuyNowButton = new JButton("Buy now");
 				productBuyNowButton.setBackground(new Color(100, 100, 100));
 
+				JLabel productStatus = productStatusLabel;
 				productBuyNowButton.addActionListener((ActionEvent event) -> {
-					BuyNowEvent(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
+					//BuyNowEvent();
+					try {
+						getViewController().BuyNow(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col),(isSuccess)->{
+							int quantity1 = productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetQuantity() - 1;
+							if(isSuccess){
+								productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).SetQuantity(quantity1);
+							}
+							if(quantity1 <= 0){
+								productStatus.setText("SOLD OUT");
+								productStatus.setForeground(Color.RED);
+							}else{
+								productStatus.setText("In-stock: " + quantity1);
+							}
+						});
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				});
 
 				productDetailsButton = new JButton("Details");
@@ -606,19 +625,29 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	}
 
 	@Override
+	public void UpdateCurrentView() {
+		if(endSearchButton != null){
+			updateSearchProductView(searchTextField.getText(),getCurrentOffset());
+		}
+		else {
+			updateProductView(getCurrentOffset());
+		}
+	}
+
+	@Override
 	public void resetView() {
-		updateProductView(1);
-		pageTextField.setValue(new Integer(1));
 		pageSize = DataHandler.GetInstance().GetPageNumber(_PRODUCT_LIMIT_ON_PAGE);
 		numberFormatter.setMinimum(1);
 		numberFormatter.setMaximum(pageSize);
+
 		pageRecordLabel.setText("of " + pageSize);
-		pageTextField.setText(String.valueOf(1));
+		pageTextField.setValue(Integer.valueOf(1));
 		searchTextField.setText("");
 		if (endSearchButton != null) {
 			utilsPanel.remove(endSearchButton);
 			endSearchButton = null;
 		}
+		updateProductView(1);
 		utilsPanel.getParent().validate();
 		utilsPanel.getParent().repaint();
 	}
@@ -627,6 +656,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	public int getCurrentOffset() {
 		return this.offset;
 	}
+
 
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -638,15 +668,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		return resizedImg;
 	}
-	private void BuyNowEvent(Product product){
-		int input = JOptionPane.showOptionDialog(null,"Buy this item immediately","ARE YOU SURE?",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE,null,null,null);
-		System.out.println(input);
-		if(input == 0 && Program.actor.BuyNow(product.GetId(),1,this::DisplayError)){
-			JOptionPane.showMessageDialog(null, "Success make order!", "Success!", JOptionPane.INFORMATION_MESSAGE);
-		}
-	}
-	private void DisplayError(String message){
-		JOptionPane.showMessageDialog(null, message, "Something is wrong!", JOptionPane.ERROR_MESSAGE);
-	}
+
 	// #endregion
 }

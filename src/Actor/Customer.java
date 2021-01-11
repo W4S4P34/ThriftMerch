@@ -129,6 +129,10 @@ public class Customer extends Actor {
 		}
 		Product product = DataHandler.GetInstance().GetProduct(productId);
 		if (product != null) {
+			if(product.GetQuantity() <= 0){
+				consumer.accept("Out of stock");
+				return false;
+			}
 			if (!myShoppingCart.containsKey(productId)) {
 				myShoppingCart.put(productId, new Product(productId, product.GetName(), product.GetBrand(),
 						product.GetPrice(), 0, product.GetImagePath(), product.GetDate(), product.GetDescription()));
@@ -141,6 +145,13 @@ public class Customer extends Actor {
 			myShoppingCart.get(productId).SetQuantity(quantity);
 		}
 		return true;
+	}
+
+	@Override
+	public boolean IsInCart(String productId){
+		if(myShoppingCart != null && myShoppingCart.containsKey(productId))
+			return true;
+		return false;
 	}
 
 	@Override
@@ -179,7 +190,7 @@ public class Customer extends Actor {
 	@Override
 	public boolean MakeOrder(Consumer<String> consumer) {
 		HashMap<String, Product> shoppingCart = GetMyCart();
-		if (shoppingCart == null) {
+		if (shoppingCart == null || shoppingCart.size() == 0) {
 			consumer.accept("Shopping cart is empty");
 			return false;
 		}
@@ -188,7 +199,10 @@ public class Customer extends Actor {
 			totalPrice += item.getValue().GetPrice() * item.getValue().GetQuantity();
 		String orderId = Helper.RandomNumberOnly(12);
 		String date = Helper.GetCurrentDate();
-		return DataHandler.GetInstance().MakeOrder(orderId, totalPrice, shoppingCart, account.ID, date);
+		boolean isSuccess = DataHandler.GetInstance().MakeOrder(orderId, totalPrice, shoppingCart, account.ID, date);
+		if(isSuccess)
+			myShoppingCart.clear();
+		return isSuccess;
 	}
 
 	@Override
@@ -198,10 +212,10 @@ public class Customer extends Actor {
 			return false;
 		}
 		Product product = DataHandler.GetInstance().GetProduct(productId);
-		if (quantity > product.GetQuantity()) {
-			consumer.accept("Exceed quantity of product!");
-			return false;
-		}
+//		if (quantity > product.GetQuantity()) {
+//			consumer.accept("Exceed quantity of product!");
+//			return false;
+//		}
 		if (product.GetQuantity() <= 0) {
 			consumer.accept("Out of stock!");
 			return false;
@@ -212,7 +226,14 @@ public class Customer extends Actor {
 		String orderId = Helper.RandomNumberOnly(12);
 		String date = Helper.GetCurrentDate();
 		int totalPrice = quantity * product.GetPrice();
-		return DataHandler.GetInstance().MakeOrder(orderId, totalPrice, mapProduct, account.ID, date);
+		boolean isSuccess = DataHandler.GetInstance().MakeOrder(orderId, totalPrice, mapProduct, account.ID, date);
+		if(isSuccess && myShoppingCart.containsKey(productId)){
+			int cardQuantity = myShoppingCart.get(productId).GetQuantity();
+			if(cardQuantity >= product.GetQuantity()){
+				myShoppingCart.get(productId).SetQuantity(myShoppingCart.get(productId).GetQuantity()-1);
+			}
+		}
+		return isSuccess;
 	}
 
 	@Override

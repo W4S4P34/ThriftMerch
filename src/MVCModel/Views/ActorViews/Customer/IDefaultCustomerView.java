@@ -10,7 +10,7 @@ public interface IDefaultCustomerView extends IView<IDefaultCustomerViewControll
 	public void updateProductView(int offset);
 	public void updateSearchProductView(String products,int offset);
 	public void repaintContentPanel(ArrayList<Product> productList);
-	
+	public void UpdateCurrentView();
 	public void resetView();
 
 	public int getCurrentOffset();
