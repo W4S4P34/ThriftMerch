@@ -8,6 +8,7 @@ import java.io.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import DataController.ORDERSTATUS;
 import DataController.Order;
 import MVCModel.Controllers.ActorControllers.Customer.IOrdersCustomerViewController;
 import MVCModel.Realizations.AbstractView;
@@ -244,9 +245,19 @@ public class OrdersCustomerView extends AbstractView<IOrdersCustomerViewControll
 			orderStatusPanel = new JPanel(new BorderLayout());
 			orderStatusPanel.setBackground(new Color(30, 30, 30));
 
-			orderStatusLabel = new JLabel(String.valueOf(item.GetOrderStatus()));
+			ORDERSTATUS status = item.GetOrderStatus();
+
+			orderStatusLabel = new JLabel(String.valueOf(status));
 			orderStatusLabel.setFont(new Font("Verdana", Font.BOLD, 18));
-			orderStatusLabel.setForeground(Color.WHITE);
+
+			if (status == ORDERSTATUS.PLACED) {
+				orderStatusLabel.setForeground(Color.RED);
+			} else if (status == ORDERSTATUS.PROCESSED) {
+				orderStatusLabel.setForeground(Color.YELLOW);
+			} else if (status == ORDERSTATUS.DELIVERED) {
+				orderStatusLabel.setForeground(Color.GREEN);
+			}
+
 			orderStatusLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			orderStatusLabel.setToolTipText(String.valueOf(item.GetOrderStatus()));
 
@@ -265,7 +276,7 @@ public class OrdersCustomerView extends AbstractView<IOrdersCustomerViewControll
 			// JPanel currentProductInCartPanel = productInCartPanel;
 
 			orderDetailsButton.addActionListener((ActionEvent e) -> {
-
+				getViewController().switchToOrderDetails(item);
 			});
 
 			/* *********************************** */
@@ -279,7 +290,7 @@ public class OrdersCustomerView extends AbstractView<IOrdersCustomerViewControll
 
 			orderPanel.add(orderInformationPanel, BorderLayout.CENTER);
 			orderPanel.add(orderButtonPanel, BorderLayout.LINE_END);
-			
+
 			contentPanel.add(orderPanel);
 		}
 		contentPanel.getParent().validate();
