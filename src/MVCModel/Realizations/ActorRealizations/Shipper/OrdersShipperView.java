@@ -191,10 +191,8 @@ public class OrdersShipperView extends AbstractView<IOrdersShipperViewController
 		if (Program.actor.ViewMyOrder() == null) {
 			contentPanel.getParent().validate();
 			contentPanel.getParent().repaint();
-
 			return;
 		}
-
 		Dimension productDim = productPanel.getPreferredSize();
 
 		for (Order item : Program.actor.ViewMyOrder()) {
@@ -299,7 +297,8 @@ public class OrdersShipperView extends AbstractView<IOrdersShipperViewController
 				orderRemoveButton.setBackground(new Color(30, 30, 30));
 
 				orderRemoveButton.addActionListener((ActionEvent e) -> {
-
+					Program.actor.RemoveOrder(item.GetID());
+					updateOrderView();
 				});
 
 				/* *********************************** */
@@ -308,7 +307,6 @@ public class OrdersShipperView extends AbstractView<IOrdersShipperViewController
 
 				orderDoneButton.addActionListener((ActionEvent e) -> {
 					Program.actor.UpdateOrder(item.GetID(), ORDERSTATUS.DELIVERED);
-					
 					updateOrderView();
 				});
 

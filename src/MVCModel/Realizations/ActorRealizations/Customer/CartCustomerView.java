@@ -267,7 +267,7 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 			productPricePanel.setBackground(new Color(30, 30, 30));
 
 			productPriceLabel = new JLabel(
-					"$" + String.valueOf(item.getValue().GetPrice() * item.getValue().GetQuantity()));
+					"$" + (item.getValue().GetPrice() * item.getValue().GetQuantity()));
 			productPriceLabel.setFont(new Font("Verdana", Font.BOLD, 12));
 			productPriceLabel.setForeground(Color.WHITE);
 			productPriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -298,7 +298,7 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 				})) {
 					currentQuantityLabel.setText(String.valueOf(item.getValue().GetQuantity()));
 					currentPriceLabel
-							.setText("$" + String.valueOf(item.getValue().GetPrice() * item.getValue().GetQuantity()));
+							.setText("$" + (item.getValue().GetPrice() * item.getValue().GetQuantity()));
 
 					getViewController().setTotalPrice(getViewController().getTotalPrice() + item.getValue().GetPrice());
 
@@ -325,7 +325,7 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 
 					currentQuantityLabel.setText(String.valueOf(item.getValue().GetQuantity()));
 					currentPriceLabel
-							.setText("$" + String.valueOf(item.getValue().GetPrice() * item.getValue().GetQuantity()));
+							.setText("$" + (item.getValue().GetPrice() * item.getValue().GetQuantity()));
 
 					getViewController().setTotalPrice(getViewController().getTotalPrice() - item.getValue().GetPrice());
 
@@ -384,7 +384,7 @@ public class CartCustomerView extends AbstractView<ICartCustomerViewController> 
 					getViewController().getTotalPrice() + item.getValue().GetPrice() * item.getValue().GetQuantity());
 		}
 
-		totalPriceLabel.setText("$" + String.valueOf(getViewController().getTotalPrice()));
+		totalPriceLabel.setText("$" + (getViewController().getTotalPrice()));
 
 		totalPriceLabel.getParent().validate();
 		totalPriceLabel.getParent().repaint();

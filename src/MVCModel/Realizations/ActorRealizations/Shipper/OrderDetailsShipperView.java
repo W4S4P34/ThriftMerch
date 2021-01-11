@@ -493,7 +493,8 @@ public class OrderDetailsShipperView extends AbstractView<IOrderDetailsShipperVi
 			removeProductButton.setPreferredSize(new Dimension(100, 45));
 
 			removeProductButton.addActionListener((ActionEvent e) -> {
-
+				Program.actor.RemoveOrder(order.GetID());
+				getViewController().switchToTakenOrder();
 			});
 			
 			orderDoneButton = new JButton("Done");

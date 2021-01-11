@@ -620,6 +620,7 @@ public class Program extends JPanel {
 			@Override
 			public void setPreviousView(String view) {
 				this.previousView = view;
+				//orderDetailsShipperView.updateOrderDetailsView();
 			}
 
 			@Override

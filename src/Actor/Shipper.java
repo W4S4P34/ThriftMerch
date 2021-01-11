@@ -112,9 +112,28 @@ public class Shipper extends Actor{
             try {
                 String sql = "update `order` set status = ?, shipperId = ? where id = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
-                System.out.println(orderStatus.GetValue());
                 stmt.setInt(1, orderStatus.GetValue());
                 stmt.setString(2, account.ID);
+                stmt.setString(3,orderId);
+                if(stmt.executeUpdate() == 0){
+                    System.out.println("Error: failed to update order");
+                }
+                conn.commit();
+                conn.close();
+                stmt.close();
+            } catch (SQLException exc) {
+                System.out.println("Error: " + exc.getMessage());
+            }
+        });
+    }
+    @Override
+    public void RemoveOrder(String orderId){
+        DataHandler.GetInstance().UpdateOrder((conn)->{
+            try {
+                String sql = "update `order` set status = ?, shipperId = ? where id = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, ORDERSTATUS.PLACED.GetValue());
+                stmt.setString(2, null);
                 stmt.setString(3,orderId);
                 if(stmt.executeUpdate() == 0){
                     System.out.println("Error: failed to update order");

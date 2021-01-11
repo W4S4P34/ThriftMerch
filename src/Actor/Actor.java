@@ -110,6 +110,7 @@ public abstract class Actor {
 		return null;
 	}
 	public void UpdateOrder(String orderId, ORDERSTATUS orderStatus) { }
+	public void RemoveOrder(String orderId){}
 	//#endregion
 
 	//#region Public virtual methods for shop
