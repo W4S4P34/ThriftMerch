@@ -40,6 +40,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	private ArrayList<Product> productList;
 	private int pageSize;
 
+	private int offset;
+
 	// #endregion
 
 	/* ****************************** */
@@ -382,6 +384,8 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	// #region Helpers
 	@Override
 	public void updateProductView(int offset) {
+		this.offset = offset;
+
 		productList = DataHandler.GetInstance().GetAllProducts(_PRODUCT_LIMIT_ON_PAGE, offset);
 		repaintContentPanel(productList);
 	}
@@ -418,13 +422,14 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		int availableProductSize = productList.size();
 		int rowNumber = (int) Math.ceil(availableProductSize / (float) _PRODUCT_LIMIT_ON_ROW);
-		HashMap<String,Product> shoppingCard = Program.actor.GetMyCart();
 
 		boolean isRemained = (availableProductSize % _PRODUCT_LIMIT_ON_ROW != 0);
 		int remainder = 0;
 		if (isRemained) {
 			remainder = availableProductSize % _PRODUCT_LIMIT_ON_ROW;
 		}
+
+		HashMap<String, Product> cart = Program.actor.GetMyCart();
 
 		for (int i = 0; i < rowNumber; i++) {
 			productRowPanel = new JPanel(new GridLayout(1, _PRODUCT_LIMIT_ON_ROW));
@@ -540,8 +545,22 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 				productAddToCartButton = new JButton("Add to Cart");
 				productAddToCartButton.setBackground(new Color(100, 100, 100));
+
+				if (cart != null && cart.containsKey(productList.get(i * _PRODUCT_LIMIT_ON_ROW + j).GetId())) {
+					productAddToCartButton.setEnabled(false);
+				}
+
+				/* Put here for fun, don't mind */
+				JButton currentButton = productAddToCartButton;
+
 				productAddToCartButton.addActionListener((ActionEvent event) -> {
-					getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
+					try {
+						getViewController().addToCart(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					currentButton.setEnabled(false);
 				});
 
 
@@ -598,6 +617,11 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		}
 		utilsPanel.getParent().validate();
 		utilsPanel.getParent().repaint();
+	}
+
+	@Override
+	public int getCurrentOffset() {
+		return this.offset;
 	}
 
 	private Image getScaledImage(Image srcImg, int w, int h) {

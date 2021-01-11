@@ -8,4 +8,6 @@ public interface ICartCustomerViewController extends IViewController {
 	public void switchToDefault();
 	public void switchToMainMenu();
 	public void switchToOrders();
+	
+	public void removeItemFromCart();
 }

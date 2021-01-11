@@ -234,6 +234,9 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
+
+				cartCustomerView.resetView();
+
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
@@ -250,10 +253,13 @@ public class Program extends JPanel {
 			}
 
 			@Override
-			public void addToCart(Product product) {
-				cartCustomerView.addToCart(product);
+			public void addToCart(Product product) throws IOException {
+				actor.AddToCart(product.GetId(), 1, (String message) -> {
+					JOptionPane.showMessageDialog(Program.mainFrame, message, "Error", JOptionPane.ERROR_MESSAGE);
+				});
+				cartCustomerView.setTotalPrice(cartCustomerView.getTotalPrice() + product.GetPrice());
+				cartCustomerView.addToCart();
 			}
-
 		}
 
 		protected class DetailsCustomerViewController implements IDetailsCustomerViewController {
@@ -268,6 +274,9 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
+
+				cartCustomerView.resetView();
+
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
@@ -309,6 +318,9 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
+
+				cartCustomerView.resetView();
+
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 
@@ -316,6 +328,11 @@ public class Program extends JPanel {
 			public void switchToOrders() {
 				ordersCustomerView.getViewController().setPreviousView(previousView);
 				cardLayout.show(MainPanel.this, ORDERSCUSTOMER_VIEW);
+			}
+
+			@Override
+			public void removeItemFromCart() {
+				defaultCustomerView.updateProductView(defaultCustomerView.getCurrentOffset());
 			}
 
 		}
@@ -344,6 +361,9 @@ public class Program extends JPanel {
 				Program.actor = null;
 				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
 				mainFrame.setLocationRelativeTo(null);
+
+				cartCustomerView.resetView();
+
 				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
 			}
 

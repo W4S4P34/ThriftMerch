@@ -12,4 +12,5 @@ public interface IDefaultCustomerView extends IView<IDefaultCustomerViewControll
 	public void repaintContentPanel(ArrayList<Product> productList);
 	
 	public void resetView();
+	public int getCurrentOffset();
 }
