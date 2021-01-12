@@ -8,7 +8,9 @@ public interface IDefaultShopViewController extends IViewController {
 	public void setActor(Actor actor);
 
 	public void switchToMainMenu();
+	public void switchToAddProduct();
 	public void switchToOrders();
 	public void switchToDetails(Product getProduct);
+
 
 }

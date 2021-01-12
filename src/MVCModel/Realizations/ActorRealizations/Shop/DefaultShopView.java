@@ -132,7 +132,7 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 		addProductButton.setBackground(new Color(30, 30, 30));
 
 		addProductButton.addActionListener((ActionEvent e) -> {
-
+			getViewController().switchToAddProduct();
 		});
 
 		Image listImage = ImageIO.read(new File("Resources/Images/list.png"));

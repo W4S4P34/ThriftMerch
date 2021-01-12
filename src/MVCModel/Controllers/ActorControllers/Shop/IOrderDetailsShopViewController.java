@@ -8,5 +8,7 @@ public interface IOrderDetailsShopViewController extends IViewController {
 	public void switchToPreviousView();
 	public void switchToDefault();
 	public void switchToMainMenu();
+	public void switchToAddProduct();
 	public void switchToOrders();
+	
 }
