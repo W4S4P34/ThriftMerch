@@ -15,16 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import DataController.Product;
 import MVCModel.Controllers.ActorControllers.Shop.IProductDetailsShopViewController;
@@ -178,7 +169,7 @@ public class ProductDetailsShopView extends AbstractView<IProductDetailsShopView
 		removeButton.setPreferredSize(new Dimension(100, 45));
 
 		removeButton.addActionListener((ActionEvent event) -> {
-
+			getViewController().RemoveProduct();
 		});
 
 		utilsPanel.add(backButton);
@@ -201,6 +192,7 @@ public class ProductDetailsShopView extends AbstractView<IProductDetailsShopView
 
 	@Override
 	public void updateProductDetailsView(Product product) {
+		getViewController().SetCurrentProduct(product);
 		contentPanel.removeAll();
 		contentPanel.setLayout(new GridLayout(1, 2));
 		contentPanel.setBackground(new Color(99, 99, 99));

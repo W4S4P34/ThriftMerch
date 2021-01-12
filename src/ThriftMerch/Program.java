@@ -55,6 +55,7 @@ import MVCModel.Views.ActorViews.Shop.IProductEditShopView;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.*;
@@ -62,6 +63,7 @@ import javax.swing.*;
 import java.lang.ClassNotFoundException;
 import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 import Actor.*;
@@ -424,7 +426,7 @@ public class Program extends JPanel {
 		protected class AddProductShopViewController implements IAddProductShopViewController {
 
 			private String previousView = "";
-
+			private File currentFile = null;
 			@Override
 			public void setPreviousView(String view) {
 				this.previousView = view;
@@ -457,12 +459,39 @@ public class Program extends JPanel {
 				cardLayout.show(MainPanel.this, ORDERSSHOP_VIEW);
 			}
 
+			@Override
+			public void AddNewProduct(String name, String brand, String price, String quantity, String description, Consumer<Boolean> callback) {
+				int input = JOptionPane.showOptionDialog(null, "Add new a product?", "ARE YOU SURE?",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+				if(input == 0){
+					Path imagePath = currentFile == null ? null : currentFile.toPath();
+					boolean isSuccess = actor.AddNewProduct(name,brand,price,quantity,imagePath,description,Program.this::DisplayError);
+					if(isSuccess){
+						defaultShopView.UpdateCurrentView();
+					}
+					callback.accept(isSuccess);
+				}
+			}
+
+
+			@Override
+			public void SetCurrentFile(File file) {
+				currentFile = file;
+			}
+
+//			@Override
+//			public File GetCurrentFile() {
+//				return currentFile;
+//			}
+
+
+
 		}
 
 		protected class ProductDetailsShopViewController implements IProductDetailsShopViewController {
 
 			private String previousView = "";
-
+			private Product currentProduct;
 			@Override
 			public void setPreviousView(String view) {
 				this.previousView = view;
@@ -512,6 +541,26 @@ public class Program extends JPanel {
 				productEditShopView.updateEditProductView();
 
 				cardLayout.show(MainPanel.this, PRODUCTEDITSHOP_VIEW);
+			}
+
+			public Product GetCurrentProduct() {
+				return currentProduct;
+			}
+
+			@Override
+			public void SetCurrentProduct(Product product) {
+				currentProduct = product;
+			}
+
+			@Override
+			public void RemoveProduct() {
+				int input = JOptionPane.showOptionDialog(null, "Remove this item immediately?", "ARE YOU SURE?",
+						JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+				if(input == 0){
+					Program.actor.RemoveProduct(currentProduct.GetId());
+					defaultShopView.UpdateCurrentView();
+					switchToDefault();
+				}
 			}
 
 		}
@@ -572,6 +621,10 @@ public class Program extends JPanel {
 			public void setProductID(String id) {
 				productID = id;
 			}
+
+
+
+
 
 
 		}

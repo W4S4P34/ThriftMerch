@@ -18,18 +18,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 
 import DataController.DataHandler;
@@ -391,8 +380,14 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 	@Override
 	public void updateProductView(int offset) {
 		this.offset = offset;
-
 		productList = DataHandler.GetInstance().GetAllProducts(_PRODUCT_LIMIT_ON_PAGE, offset);
+		pageSize = DataHandler.GetInstance().GetPageNumber(_PRODUCT_LIMIT_ON_PAGE);
+
+		numberFormatter.setMinimum(pageSize == 0 ? 0 : 1);
+		numberFormatter.setMaximum(pageSize);
+		pageRecordLabel.setText("of " + pageSize);
+		pageTextField.setText(pageSize == 0 ? String.valueOf(0) : String.valueOf(offset));
+
 		repaintContentPanel(productList);
 	}
 
@@ -560,8 +555,12 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 				productRemoveButton.setBackground(new Color(100, 100, 100));
 
 				productRemoveButton.addActionListener((ActionEvent event) -> {
-					Program.actor.RemoveProduct(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetId());
-					UpdateCurrentView();
+					int input = JOptionPane.showOptionDialog(null, "Remove this item immediately?", "ARE YOU SURE?",
+							JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if(input == 0){
+						Program.actor.RemoveProduct(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetId());
+						UpdateCurrentView();
+					}
 				});
 
 				productButtonPanel.add(productDetailsButton);

@@ -3,6 +3,7 @@ package Actor;
 import DataController.*;
 import Misc.ActorType;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -115,7 +116,7 @@ public abstract class Actor {
 
 	//#region Public virtual methods for shop
 	public ArrayList<Order> ViewAllOrder(){ return null; }
-	public boolean AddNewProduct(String name,String brand,int price,int quantity,String description,Consumer<String> consumer){ return false; }
+	public boolean AddNewProduct(String name, String brand, String price, String quantity, Path imagePath, String description, Consumer<String> consumer){ return false; }
 	public boolean UpdateQuantity(String productId,int quantity, Consumer<String> consumer){ return false; }
 	public boolean UpdatePrice(String productId,int price, Consumer<String> consumer){ return false; }
 	public boolean UpdateName(String productId,String name, Consumer<String> consumer){ return false; }

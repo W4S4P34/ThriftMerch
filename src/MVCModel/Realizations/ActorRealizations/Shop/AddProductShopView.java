@@ -180,7 +180,16 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 		addButton.setPreferredSize(new Dimension(100, 45));
 
 		addButton.addActionListener((ActionEvent event) -> {
-
+			String name = nameTextField.getText();
+			String brand = brandTextField.getText();
+			String price = priceTextField.getText();
+			String quantity = quantityTextField.getText();
+			String description = descriptionTextArea.getText();
+			getViewController().AddNewProduct(name,brand,price,quantity,description,(isSuccess)->{
+				if(isSuccess){
+					this.updateAddProductView();
+				}
+			});
 		});
 
 		utilsPanel.add(backButton);
@@ -292,11 +301,13 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 
+				getViewController().SetCurrentFile(file);
 				imageChooserLabel.setText(file.getAbsolutePath());
 				imageChooserLabel.setToolTipText(file.getAbsolutePath());
 
 				imageChooserLabel.getParent().validate();
 				imageChooserLabel.getParent().repaint();
+
 
 			} else {
 				// Cancel

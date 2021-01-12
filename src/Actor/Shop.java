@@ -4,6 +4,10 @@ import DataController.*;
 import Misc.ActorType;
 import Utils.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -73,15 +77,43 @@ public class Shop extends Actor {
     }
 
     @Override
-    public boolean AddNewProduct(String name,String brand,int price,int quantity,String description,Consumer<String> consumer){
-        if(name.isEmpty() || brand.isEmpty() || description.isEmpty()){
-            consumer.accept("Invalid input,please fill in all information!");
-            return false;
+    public boolean AddNewProduct(String name, String brand, String price, String quantity, Path imagePath, String description, Consumer<String> consumer){
+        try {
+
+            if(name.isEmpty() || brand.isEmpty() || description.isEmpty()){
+                consumer.accept("Invalid input,please fill in all information!");
+                return false;
+            }
+            if(!Helper.IsOnlyDigit(price)){
+                consumer.accept("Price can contain number only!");
+                return false;
+            }
+            if(!Helper.IsOnlyDigit(quantity)){
+                consumer.accept("Quantity can contain number only!");
+                return false;
+            }
+            if(imagePath == null){
+                consumer.accept("Image product is empty!");
+                return false;
+            }
+
+            String productId = Helper.RandomCharacterNumber(10);
+            int totalProduct = DataHandler.GetInstance().GetPageNumber(1);
+
+            Path imageDescPath = Paths.get(System.getProperty("user.dir")+"/Resources/Products");
+            System.out.println(imageDescPath.toAbsolutePath());
+
+            String imgPath = String.format("Products/%s.jpg",totalProduct+1);
+
+            if(DataHandler.GetInstance().AddNewProduct(new Product(productId,name,brand,Integer.parseInt(price),Integer.parseInt(quantity),"Resources/" + imgPath,new Date(System.currentTimeMillis()),description))){
+                Files.move(imagePath,imageDescPath.resolveSibling(imgPath), StandardCopyOption.REPLACE_EXISTING);
+                return true;
+            }
+
+        }catch (Exception exc){
+            consumer.accept(exc.getMessage());
         }
-        String productId = Helper.RandomCharacterNumber(10);
-        int totalProduct = DataHandler.GetInstance().GetPageNumber(1);
-        String imagePath = String.format("Resources/Products/%s.jpg",totalProduct+1);
-        return DataHandler.GetInstance().AddNewProduct(new Product(productId,name,brand,price,quantity,imagePath,new Date(System.currentTimeMillis()),description));
+        return false;
     }
 
     @Override

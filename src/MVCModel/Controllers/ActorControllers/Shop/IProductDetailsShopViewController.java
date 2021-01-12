@@ -1,6 +1,9 @@
 package MVCModel.Controllers.ActorControllers.Shop;
 
+import DataController.Product;
 import MVCModel.Controllers.IViewController;
+
+import java.util.function.Consumer;
 
 public interface IProductDetailsShopViewController extends IViewController {
 
@@ -18,4 +21,7 @@ public interface IProductDetailsShopViewController extends IViewController {
 
 	public void switchToOrders();
 
+	public Product GetCurrentProduct();
+	public void SetCurrentProduct(Product product);
+	public void RemoveProduct();
 }
