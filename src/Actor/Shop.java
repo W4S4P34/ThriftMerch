@@ -117,12 +117,18 @@ public class Shop extends Actor {
     }
 
     @Override
-    public boolean UpdateQuantity(String productId,int quantity, Consumer<String> consumer){
-        return UpdateProduct(productId,"quantity",quantity,consumer);
+    public boolean UpdateQuantity(String productId,String quantity, Consumer<String> consumer){
+        if(!Helper.IsOnlyDigit(quantity)){
+            consumer.accept("Quantity can contain number only!");
+        }
+        return UpdateProduct(productId,"quantity",Integer.parseInt(quantity),consumer);
     }
     @Override
-    public boolean UpdatePrice(String productId,int price, Consumer<String> consumer){
-        return UpdateProduct(productId,"price",price,consumer);
+    public boolean UpdatePrice(String productId,String price, Consumer<String> consumer){
+        if(!Helper.IsOnlyDigit(price)){
+            consumer.accept("Price can contain number only!");
+        }
+        return UpdateProduct(productId,"price",Integer.parseInt(price),consumer);
     }
     @Override
     public boolean UpdateName(String productId,String name, Consumer<String> consumer){

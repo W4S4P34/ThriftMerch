@@ -117,8 +117,8 @@ public abstract class Actor {
 	//#region Public virtual methods for shop
 	public ArrayList<Order> ViewAllOrder(){ return null; }
 	public boolean AddNewProduct(String name, String brand, String price, String quantity, Path imagePath, String description, Consumer<String> consumer){ return false; }
-	public boolean UpdateQuantity(String productId,int quantity, Consumer<String> consumer){ return false; }
-	public boolean UpdatePrice(String productId,int price, Consumer<String> consumer){ return false; }
+	public boolean UpdateQuantity(String productId,String quantity, Consumer<String> consumer){ return false; }
+	public boolean UpdatePrice(String productId,String price, Consumer<String> consumer){ return false; }
 	public boolean UpdateName(String productId,String name, Consumer<String> consumer){ return false; }
 	public boolean UpdateDescription(String productId,String description, Consumer<String> consumer){ return false; }
 	public boolean UpdateBrand(String productId,String brand, Consumer<String> consumer){ return false; }

@@ -1,5 +1,6 @@
 package ThriftMerch;
 
+import DataController.DataHandler;
 import DataController.ORDERSTATUS;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Controllers.IMainMenuViewController;
@@ -561,7 +562,9 @@ public class Program extends JPanel {
 					defaultShopView.UpdateCurrentView();
 					switchToDefault();
 				}
+
 			}
+
 
 		}
 
@@ -622,9 +625,16 @@ public class Program extends JPanel {
 				productID = id;
 			}
 
-
-
-
+			@Override
+			public void EditProduct(String price, String quantity, Consumer<Boolean> callback) {
+				boolean isSuccess = false;
+				isSuccess = Program.actor.UpdatePrice(productID,price,Program.this::DisplayError) && Program.actor.UpdateQuantity(productID,quantity,Program.this::DisplayError);
+				if(isSuccess){
+					defaultShopView.UpdateCurrentView();
+					productDetailsShopView.updateProductDetailsView(DataHandler.GetInstance().GetProduct(productID));
+				}
+				callback.accept(isSuccess);
+			}
 
 
 		}

@@ -15,15 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import MVCModel.Controllers.ActorControllers.Shop.IProductEditShopViewController;
 import MVCModel.Realizations.AbstractView;
@@ -172,7 +164,12 @@ public class ProductEditShopView extends AbstractView<IProductEditShopViewContro
 		saveButton.setPreferredSize(new Dimension(100, 45));
 
 		saveButton.addActionListener((ActionEvent event) -> {
-
+			getViewController().EditProduct(priceTextField.getText(),quantityTextField.getText(),(isSuccess)->{
+				if(isSuccess){
+					updateEditProductView();
+					JOptionPane.showMessageDialog(null,"Edit success","Success!",JOptionPane.INFORMATION_MESSAGE);
+				}
+			});
 		});
 
 		utilsPanel.add(backButton);
