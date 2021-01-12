@@ -8,4 +8,6 @@ public interface IOrderDetailsShipperView extends IView<IOrderDetailsShipperView
 	public void updateMainOrderDetailsView(Order order);
 	public void updateOrderDetailsView(Order order);
 	public void updateTakenOrderDetailsView(Order order);
+
+
 }

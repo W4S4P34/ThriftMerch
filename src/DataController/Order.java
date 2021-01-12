@@ -46,5 +46,11 @@ public class Order {
         return shipper;
     }
     public Customer GetCustomer() { return customer; }
+    public void SetShipper(Shipper shipper){
+        this.shipper = shipper;
+    }
+    public void SetOrderStatus(ORDERSTATUS status){
+        this.status = status;
+    }
     //#endregion
 }

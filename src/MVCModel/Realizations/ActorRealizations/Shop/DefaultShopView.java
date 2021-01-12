@@ -232,15 +232,6 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 					utilsPanel.getParent().repaint();
 				}
 			} else {
-//				if (endSearchButton != null) {
-//					utilsPanel.remove(endSearchButton);
-//					endSearchButton = null;
-//
-//					updateProductView(1);
-//
-//					utilsPanel.getParent().validate();
-//					utilsPanel.getParent().repaint();
-//				}
 				resetView();
 			}
 
@@ -407,8 +398,8 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 
 	@Override
 	public void updateSearchProductView(String products, int offset) {
-		System.out.println("Offset: " + offset);
-		productList = DataHandler.GetInstance().SearchProducts(products, _PRODUCT_LIMIT_ON_PAGE, offset);
+		this.offset = offset;
+		productList = DataHandler.GetInstance().SearchProducts(products, _PRODUCT_LIMIT_ON_PAGE, offset == 0 ? 1 : offset);
 		pageSize = DataHandler.GetInstance().GetPageNumberSearch(products, _PRODUCT_LIMIT_ON_PAGE);
 
 		numberFormatter.setMinimum(pageSize == 0 ? 0 : 1);
@@ -569,7 +560,8 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 				productRemoveButton.setBackground(new Color(100, 100, 100));
 
 				productRemoveButton.addActionListener((ActionEvent event) -> {
-					
+					Program.actor.RemoveProduct(productList.get(row * _PRODUCT_LIMIT_ON_ROW + col).GetId());
+					UpdateCurrentView();
 				});
 
 				productButtonPanel.add(productDetailsButton);
@@ -609,8 +601,9 @@ public class DefaultShopView extends AbstractView<IDefaultShopViewController> im
 		numberFormatter.setMaximum(pageSize);
 
 		pageRecordLabel.setText("of " + pageSize);
-		pageTextField.setValue(Integer.valueOf(1));
 		searchTextField.setText("");
+		pageTextField.setText("1");
+
 		if (endSearchButton != null) {
 			utilsPanel.remove(endSearchButton);
 			endSearchButton = null;

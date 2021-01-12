@@ -121,6 +121,7 @@ public abstract class Actor {
 	public boolean UpdateName(String productId,String name, Consumer<String> consumer){ return false; }
 	public boolean UpdateDescription(String productId,String description, Consumer<String> consumer){ return false; }
 	public boolean UpdateBrand(String productId,String brand, Consumer<String> consumer){ return false; }
+	public boolean RemoveProduct(String productId){ return false; }
 	//#endregion
 
 	/* **************************************** */

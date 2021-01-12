@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
+import DataController.DataHandler;
 import DataController.ORDERSTATUS;
 import DataController.Order;
 import DataController.Product;
@@ -459,7 +460,7 @@ public class OrderDetailsShipperView extends AbstractView<IOrderDetailsShipperVi
 	@Override
 	public void updateTakenOrderDetailsView(Order order) {
 		updateMainOrderDetailsView(order);
-
+		getViewController().SetCurrentOrder(order);
 		footerPanel.removeAll();
 
 		utilsPanel = new JPanel(new FlowLayout());
@@ -494,6 +495,9 @@ public class OrderDetailsShipperView extends AbstractView<IOrderDetailsShipperVi
 
 			removeProductButton.addActionListener((ActionEvent e) -> {
 				Program.actor.RemoveOrder(order.GetID());
+				order.SetShipper(null);
+				order.SetOrderStatus(ORDERSTATUS.PLACED);
+				updateOrderDetailsView(order);
 				getViewController().switchToTakenOrder();
 			});
 			
@@ -503,7 +507,8 @@ public class OrderDetailsShipperView extends AbstractView<IOrderDetailsShipperVi
 
 			orderDoneButton.addActionListener((ActionEvent e) -> {
 				Program.actor.UpdateOrder(order.GetID(), ORDERSTATUS.DELIVERED);
-
+				order.SetOrderStatus(ORDERSTATUS.DELIVERED);
+				updateOrderDetailsView(order);
 				getViewController().switchToTakenOrder();
 			});
 
@@ -516,6 +521,8 @@ public class OrderDetailsShipperView extends AbstractView<IOrderDetailsShipperVi
 		footerPanel.getParent().validate();
 		footerPanel.getParent().repaint();
 	}
+
+
 
 	private Image getScaledImage(Image srcImg, int w, int h) {
 		BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);

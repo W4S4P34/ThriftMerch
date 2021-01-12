@@ -1,5 +1,6 @@
 package ThriftMerch;
 
+import DataController.ORDERSTATUS;
 import MVCModel.Controllers.ILoginViewController;
 import MVCModel.Controllers.IMainMenuViewController;
 import MVCModel.Controllers.ISignUpViewController;
@@ -54,7 +55,7 @@ import java.lang.InstantiationException;
 import java.lang.IllegalAccessException;
 import java.util.function.Consumer;
 
-import Actor.Actor;
+import Actor.*;
 import DataController.Order;
 import DataController.Product;
 
@@ -698,6 +699,7 @@ public class Program extends JPanel {
 		protected class OrderDetailsShipperViewController implements IOrderDetailsShipperViewController {
 
 			private String previousView = "";
+			private Order currentOrder;
 
 			@Override
 			public void setPreviousView(String view) {
@@ -707,6 +709,16 @@ public class Program extends JPanel {
 			@Override
 			public void switchToPreviousView() {
 				cardLayout.show(MainPanel.this, previousView);
+			}
+
+			@Override
+			public void SetCurrentOrder(Order order) {
+				currentOrder = order;
+			}
+
+			@Override
+			public Order GetCurrentUrder() {
+				return currentOrder;
 			}
 
 			@Override
@@ -739,13 +751,29 @@ public class Program extends JPanel {
 			@Override
 			public void setPreviousView(String view) {
 				this.previousView = view;
-				// orderDetailsShipperView.updateOrderDetailsView();
+				if(view.equals(ORDERDETAILSSHIPPER_VIEW)){
+					orderDetailsShipperView.updateOrderDetailsView(orderDetailsShipperView.getViewController().GetCurrentUrder());
+				}
 			}
 
 			@Override
 			public void switchToPreviousView() {
 				cardLayout.show(MainPanel.this, previousView);
 			}
+
+			@Override
+			public void RemoveOrder() {
+				Order currentOrder = orderDetailsShipperView.getViewController().GetCurrentUrder();
+				currentOrder.SetOrderStatus(ORDERSTATUS.PLACED);
+				currentOrder.SetShipper(null);
+			}
+
+			@Override
+			public void DeliveryDone() {
+				Order currentOrder = orderDetailsShipperView.getViewController().GetCurrentUrder();
+				currentOrder.SetOrderStatus(ORDERSTATUS.DELIVERED);
+			}
+
 
 			@Override
 			public void switchToDefault() {

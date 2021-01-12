@@ -108,6 +108,12 @@ public class Shop extends Actor {
     public ArrayList<Order> ViewAllOrder(){
         return DataHandler.GetInstance().ViewAllOrder();
     }
+    @Override
+    public boolean RemoveProduct(String productId){
+        if(productId.equals(""))
+            return false;
+        return DataHandler.GetInstance().RemoveProduct(productId);
+    }
     //#endregion
 
     //#region Private methods

@@ -217,15 +217,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 					utilsPanel.getParent().repaint();
 				}
 			} else {
-//				if (endSearchButton != null) {
-//					utilsPanel.remove(endSearchButton);
-//					endSearchButton = null;
-//
-//					updateProductView(1);
-//
-//					utilsPanel.getParent().validate();
-//					utilsPanel.getParent().repaint();
-//				}
 				resetView();
 			}
 
@@ -270,7 +261,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 
 		rightButton.addActionListener((ActionEvent e) -> {
 			Integer currentValue = (Integer) pageTextField.getValue() + (Integer) 1;
-			System.out.println(currentValue);
 			if (currentValue <= pageSize)
 				pageTextField.setText(currentValue.toString());
 
@@ -393,7 +383,6 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 	@Override
 	public void updateSearchProductView(String products, int offset) {
 		this.offset = offset;
-		System.out.println("Offset: " + offset);
 
 		productList = DataHandler.GetInstance().SearchProducts(products, _PRODUCT_LIMIT_ON_PAGE,
 				offset == 0 ? 1 : offset);
@@ -637,6 +626,7 @@ public class DefaultCustomerView extends AbstractView<IDefaultCustomerViewContro
 		pageRecordLabel.setText("of " + pageSize);
 		pageTextField.setText("1");
 		searchTextField.setText("");
+
 		if (endSearchButton != null) {
 			utilsPanel.remove(endSearchButton);
 			endSearchButton = null;

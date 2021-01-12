@@ -10,4 +10,7 @@ public interface IOrdersShipperViewController extends IViewController {
 	public void switchToDefault();
 	public void switchToDetails(Order item);
 	public void switchToPreviousView();
+
+	public void RemoveOrder();
+	public void DeliveryDone();
 }
