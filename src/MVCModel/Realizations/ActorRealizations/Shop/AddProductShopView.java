@@ -15,19 +15,27 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import MVCModel.Controllers.ActorControllers.Shop.IAddProductShopViewController;
 import MVCModel.Realizations.AbstractView;
 import MVCModel.Views.ActorViews.Shop.IAddProductShopView;
 import ThriftMerch.Program;
+import Utils.SpringUtilities;
 
-public class AddProductShopView extends AbstractView<IAddProductShopViewController> implements IAddProductShopView  {
+public class AddProductShopView extends AbstractView<IAddProductShopViewController> implements IAddProductShopView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,13 +62,20 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 	private JButton logoutButton, listButton, addProductButton;
 
 	private JPanel utilsPanel;
-	private JButton backButton, homeButton;
+	private JButton backButton, homeButton, addButton;
+
+	private JLabel nameLabel, brandLabel, priceLabel, quantityLabel, imagePathLabel, descriptionLabel,
+			imageChooserLabel;
+	private JTextField nameTextField, brandTextField, priceTextField, quantityTextField;
+	private JButton imageChooserButton;
+	private JFileChooser fileChooser;
+	private JTextArea descriptionTextArea;
 
 	// #endregion
 
 	/* ****************************** */
 	// #region Construct Layout Process
-	
+
 	public AddProductShopView(IAddProductShopViewController viewController) throws IOException {
 		super(viewController);
 
@@ -103,7 +118,7 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 		addProductButton.addActionListener((ActionEvent e) -> {
 
 		});
-		
+
 		Image listImage = ImageIO.read(new File("Resources/Images/list.png"));
 		Icon listIcon = new ImageIcon(getScaledImage(listImage, 32, 32));
 		listButton = new JButton(listIcon);
@@ -125,12 +140,12 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 		productPanel = new JPanel(new BorderLayout());
 		productPanel.setBackground(new Color(99, 99, 99));
 
-		contentPanel = new JPanel(new BorderLayout());
+		contentPanel = new JPanel(new SpringLayout());
 		// contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
 		contentPanel.setBackground(new Color(99, 99, 99));
 
-		// contentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		
+		contentPanel.setBorder(BorderFactory.createEmptyBorder(100, 15, 100, 15));
+
 		productPanel.add(contentPanel);
 
 		/* *********************** */
@@ -160,8 +175,17 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 			getViewController().switchToDefault();
 		});
 
+		addButton = new JButton("Add");
+		addButton.setBackground(new Color(30, 30, 30));
+		addButton.setPreferredSize(new Dimension(100, 45));
+
+		addButton.addActionListener((ActionEvent event) -> {
+
+		});
+
 		utilsPanel.add(backButton);
 		utilsPanel.add(homeButton);
+		utilsPanel.add(addButton);
 
 		footerPanel.add(utilsPanel);
 
@@ -179,21 +203,146 @@ public class AddProductShopView extends AbstractView<IAddProductShopViewControll
 	public void updateAddProductView() {
 		contentPanel.removeAll();
 
-		// ADD HERE
-		// ADD another Panel to Content Panel
-		
-		/* anotherPanel = new JPanel(new GridLayout(0, 1)); */
-		
-		// ADD Label of Textfield
-		
-		
-		// ADD corresponding Textfield
-		
-		
-		// Tips: Use FileChooser for image :v
-		
+		String[] labels = { "Name: ", "Brand: ", "Price: ", "Quantity: ", "Image Path: ", "Descriptions: " };
+		int numPairs = labels.length;
 
-		/* contentPanel.add(anotherPanel); */
+		/* *********************************** */
+		nameLabel = new JLabel("Name: ", JLabel.TRAILING);
+
+		nameLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		nameLabel.setForeground(Color.WHITE);
+		nameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		nameTextField = new JTextField(256);
+		nameLabel.setLabelFor(nameTextField);
+		nameTextField.setFont(new Font("Verdana", Font.PLAIN, 16));
+
+		contentPanel.add(nameLabel);
+		contentPanel.add(nameTextField);
+
+		/* *********************************** */
+		brandLabel = new JLabel("Brand: ", JLabel.TRAILING);
+
+		brandLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		brandLabel.setForeground(Color.WHITE);
+		brandLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		brandTextField = new JTextField(256);
+		brandLabel.setLabelFor(brandTextField);
+		brandTextField.setFont(new Font("Verdana", Font.PLAIN, 16));
+
+		contentPanel.add(brandLabel);
+		contentPanel.add(brandTextField);
+
+		/* *********************************** */
+		priceLabel = new JLabel("Price: ", JLabel.TRAILING);
+
+		priceLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		priceLabel.setForeground(Color.WHITE);
+		priceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		priceTextField = new JTextField(256);
+		priceLabel.setLabelFor(priceTextField);
+		priceTextField.setFont(new Font("Verdana", Font.PLAIN, 16));
+
+		contentPanel.add(priceLabel);
+		contentPanel.add(priceTextField);
+
+		/* *********************************** */
+		quantityLabel = new JLabel("Quantity: ", JLabel.TRAILING);
+
+		quantityLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		quantityLabel.setForeground(Color.WHITE);
+		quantityLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		quantityTextField = new JTextField(256);
+		quantityLabel.setLabelFor(quantityTextField);
+		quantityTextField.setFont(new Font("Verdana", Font.PLAIN, 16));
+
+		contentPanel.add(quantityLabel);
+		contentPanel.add(quantityTextField);
+
+		/* *********************************** */
+		imagePathLabel = new JLabel("Image Path: ", JLabel.TRAILING);
+
+		imagePathLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		imagePathLabel.setForeground(Color.WHITE);
+		imagePathLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		fileChooser = new JFileChooser();
+
+		FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image files",
+				ImageIO.getReaderFileSuffixes());
+
+		fileChooser.addChoosableFileFilter(imageFilter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+
+		imagePathLabel.setLabelFor(fileChooser);
+
+		JPanel chooserButtonPanel = new JPanel(new BorderLayout());
+		chooserButtonPanel.setBackground(new Color(99, 99, 99));
+
+		imageChooserButton = new JButton("Choose file");
+		imageChooserButton.setFont(new Font("Verdana", Font.BOLD, 16));
+		imageChooserButton.setBackground(new Color(99, 99, 99));
+
+		imageChooserButton.addActionListener((ActionEvent e) -> {
+			int returnValue = fileChooser.showSaveDialog(Program.mainFrame);
+
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+
+				imageChooserLabel.setText(file.getAbsolutePath());
+				imageChooserLabel.setToolTipText(file.getAbsolutePath());
+
+				imageChooserLabel.getParent().validate();
+				imageChooserLabel.getParent().repaint();
+
+			} else {
+				// Cancel
+			}
+
+		});
+
+		imageChooserLabel = new JLabel("");
+		imageChooserLabel.setFont(new Font("Verdana", Font.PLAIN, 16));
+		imageChooserLabel.setForeground(Color.WHITE);
+		imageChooserLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+		imageChooserLabel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));
+
+		chooserButtonPanel.add(imageChooserButton, BorderLayout.LINE_START);
+		chooserButtonPanel.add(imageChooserLabel, BorderLayout.CENTER);
+
+		contentPanel.add(imagePathLabel);
+		contentPanel.add(chooserButtonPanel);
+
+		/* *********************************** */
+		descriptionLabel = new JLabel("Description: ", JLabel.TRAILING);
+
+		descriptionLabel.setFont(new Font("Verdana", Font.BOLD, 16));
+		descriptionLabel.setForeground(Color.WHITE);
+		descriptionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+		descriptionTextArea = new JTextArea(5, 0);
+		descriptionTextArea.setLineWrap(true);
+		descriptionTextArea.setWrapStyleWord(true);
+		descriptionTextArea.setFont(new Font("Verdana", Font.PLAIN, 16));
+
+		JScrollPane descriptionScrollPanel = new JScrollPane(descriptionTextArea);
+		descriptionScrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		descriptionScrollPanel.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		descriptionScrollPanel.getVerticalScrollBar().setUnitIncrement(16);
+
+		descriptionLabel.setLabelFor(quantityTextField);
+
+		contentPanel.add(descriptionLabel);
+		contentPanel.add(descriptionScrollPanel);
+
+		/* *********************************** */
+		SpringUtilities.makeCompactGrid(contentPanel, numPairs, 2, // rows, cols
+				0, 0, // initX, initY
+				5, 5); // xPad, yPad
 
 		contentPanel.getParent().validate();
 		contentPanel.getParent().repaint();
