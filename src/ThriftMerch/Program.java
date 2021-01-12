@@ -17,6 +17,7 @@ import MVCModel.Controllers.ActorControllers.Shop.IDefaultShopViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IOrderDetailsShopViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IOrdersShopViewController;
 import MVCModel.Controllers.ActorControllers.Shop.IProductDetailsShopViewController;
+import MVCModel.Controllers.ActorControllers.Shop.IProductEditShopViewController;
 import MVCModel.Realizations.LoginView;
 import MVCModel.Realizations.MainMenuView;
 import MVCModel.Realizations.SignUpView;
@@ -33,6 +34,7 @@ import MVCModel.Realizations.ActorRealizations.Shop.DefaultShopView;
 import MVCModel.Realizations.ActorRealizations.Shop.OrderDetailsShopView;
 import MVCModel.Realizations.ActorRealizations.Shop.OrdersShopView;
 import MVCModel.Realizations.ActorRealizations.Shop.ProductDetailsShopView;
+import MVCModel.Realizations.ActorRealizations.Shop.ProductEditShopView;
 import MVCModel.Views.ILoginView;
 import MVCModel.Views.IMainMenuView;
 import MVCModel.Views.ISignUpView;
@@ -49,6 +51,7 @@ import MVCModel.Views.ActorViews.Shop.IDefaultShopView;
 import MVCModel.Views.ActorViews.Shop.IOrderDetailsShopView;
 import MVCModel.Views.ActorViews.Shop.IOrdersShopView;
 import MVCModel.Views.ActorViews.Shop.IProductDetailsShopView;
+import MVCModel.Views.ActorViews.Shop.IProductEditShopView;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -99,6 +102,7 @@ public class Program extends JPanel {
 
 		protected static final String ADDPRODUCTSHOP_VIEW = "View.shop.add.product";
 		protected static final String PRODUCTDETAILSSHOP_VIEW = "View.shop.product.details";
+		protected static final String PRODUCTEDITSHOP_VIEW = "View.shop.product.edit";
 		protected static final String ORDERSSHOP_VIEW = "View.shop.orders";
 		protected static final String ORDERDETAILSSHOP_VIEW = "View.shop.order.details";
 
@@ -122,6 +126,7 @@ public class Program extends JPanel {
 
 		private IAddProductShopView addProductShopView;
 		private IProductDetailsShopView productDetailsShopView;
+		private IProductEditShopView productEditShopView;
 		private IOrdersShopView ordersShopView;
 		private IOrderDetailsShopView orderDetailsShopView;
 
@@ -151,6 +156,7 @@ public class Program extends JPanel {
 
 			addProductShopView = new AddProductShopView(new AddProductShopViewController());
 			productDetailsShopView = new ProductDetailsShopView(new ProductDetailsShopViewController());
+			productEditShopView = new ProductEditShopView(new ProductEditShopViewController());
 			ordersShopView = new OrdersShopView(new OrdersShopViewController());
 			orderDetailsShopView = new OrderDetailsShopView(new OrderDetailsShopViewController());
 
@@ -172,6 +178,7 @@ public class Program extends JPanel {
 
 			add(addProductShopView.getView(), ADDPRODUCTSHOP_VIEW);
 			add(productDetailsShopView.getView(), PRODUCTDETAILSSHOP_VIEW);
+			add(productEditShopView.getView(), PRODUCTEDITSHOP_VIEW);
 			add(ordersShopView.getView(), ORDERSSHOP_VIEW);
 			add(orderDetailsShopView.getView(), ORDERDETAILSSHOP_VIEW);
 
@@ -496,6 +503,76 @@ public class Program extends JPanel {
 
 				cardLayout.show(MainPanel.this, ORDERSSHOP_VIEW);
 			}
+
+			@Override
+			public void switchToEditProduct(String id) {
+				productEditShopView.getViewController().setPreviousView(PRODUCTDETAILSSHOP_VIEW);
+				productEditShopView.getViewController().setProductID(id);
+
+				productEditShopView.updateEditProductView();
+
+				cardLayout.show(MainPanel.this, PRODUCTEDITSHOP_VIEW);
+			}
+
+		}
+
+		protected class ProductEditShopViewController implements IProductEditShopViewController {
+
+			private String previousView = "";
+			
+			private String productID = "";
+
+			@Override
+			public void setPreviousView(String view) {
+				this.previousView = view;
+			}
+
+			@Override
+			public void switchToMainMenu() {
+				Program.actor = null;
+				mainFrame.setSize(new Dimension(_DEFAULT_SCREEN_WIDTH, _DEFAULT_SCREEN_HEIGHT));
+				mainFrame.setLocationRelativeTo(null);
+				cardLayout.show(MainPanel.this, MAINMENU_VIEW);
+			}
+
+			@Override
+			public void switchToOrders() {
+				ordersShopView.getViewController().setPreviousView(PRODUCTEDITSHOP_VIEW);
+
+				ordersShopView.updateOrderView();
+
+				cardLayout.show(MainPanel.this, ORDERSSHOP_VIEW);
+			}
+
+			@Override
+			public void switchToAddProduct() {
+				addProductShopView.getViewController().setPreviousView(PRODUCTEDITSHOP_VIEW);
+
+				addProductShopView.updateAddProductView();
+
+				cardLayout.show(MainPanel.this, ADDPRODUCTSHOP_VIEW);
+			}
+
+			@Override
+			public void switchToPreviousView() {
+				cardLayout.show(MainPanel.this, previousView);
+			}
+
+			@Override
+			public void switchToDefault() {
+				cardLayout.show(MainPanel.this, DEFAULTSHOP_VIEW);
+			}
+			
+			@Override
+			public String getProductID() {
+				return productID;
+			}
+
+			@Override
+			public void setProductID(String id) {
+				productID = id;
+			}
+
 
 		}
 

@@ -173,10 +173,6 @@ public class ProductDetailsShopView extends AbstractView<IProductDetailsShopView
 		editButton.setBackground(new Color(30, 30, 30));
 		editButton.setPreferredSize(new Dimension(100, 45));
 
-		editButton.addActionListener((ActionEvent event) -> {
-
-		});
-
 		removeButton = new JButton("Remove");
 		removeButton.setBackground(new Color(30, 30, 30));
 		removeButton.setPreferredSize(new Dimension(100, 45));
@@ -309,6 +305,15 @@ public class ProductDetailsShopView extends AbstractView<IProductDetailsShopView
 		contentPanel.add(productImagePanel);
 		contentPanel.add(informationPanel);
 
+		/* ****************************************************** */
+		editButton.addActionListener((ActionEvent event) -> {
+			getViewController().switchToEditProduct(product.GetId());
+		});
+		
+		/* ****************************************************** */
+		editButton.getParent().validate();
+		editButton.getParent().repaint();
+		
 		/* ****************************************************** */
 		contentPanel.getParent().validate();
 		contentPanel.getParent().repaint();
