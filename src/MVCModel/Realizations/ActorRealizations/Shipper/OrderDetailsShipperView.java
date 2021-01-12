@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import DataController.DataHandler;
 import DataController.ORDERSTATUS;
 import DataController.Order;
 import DataController.Product;
